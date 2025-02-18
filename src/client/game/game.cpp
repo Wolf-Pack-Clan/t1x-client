@@ -27,7 +27,7 @@ namespace game
 			if (mohaa)
 				return "mohaa.exe";
 			else
-				return "codmp.exe";
+				return "CoDMP.exe";
 		}
 	}
 }
