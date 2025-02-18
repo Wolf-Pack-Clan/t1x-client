@@ -5,7 +5,8 @@
 #include <utils/io.hpp>
 #include <utils/string.hpp>
 
-#include <DbgHelp.h>
+#include <dbghelp.h>
+#include <fstream>
 
 [[noreturn]] static void WINAPI exit_hook(const int code)
 {
@@ -65,13 +66,45 @@ static void enable_dpi_awareness()
         set_dpi(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 }
 
+static LONG WINAPI CrashLogger(EXCEPTION_POINTERS* exceptionPointers)
+{
+    std::string crashFilename = "iw1x_crash.log";
+    std::ofstream logFile(crashFilename);
+    if (logFile.is_open())
+    {
+        HANDLE hProcess = GetCurrentProcess();
+        SymInitialize(hProcess, nullptr, TRUE);
+        
+        auto exceptionAddress = exceptionPointers->ExceptionRecord->ExceptionAddress;
+        auto exceptionCode = exceptionPointers->ExceptionRecord->ExceptionCode;
+        
+        IMAGEHLP_MODULE moduleInfo = { sizeof(moduleInfo) };
+        SymGetModuleInfo(hProcess, reinterpret_cast<DWORD>(exceptionAddress), &moduleInfo);
+        std::filesystem::path loadedImageName = moduleInfo.LoadedImageName;
+        auto file = loadedImageName.filename().string();
+        
+        logFile << "File: " << file << std::endl;
+        logFile << "Exception Address: 0x" << std::hex << exceptionAddress << std::endl;
+        logFile << "Exception Code: 0x" << std::hex << exceptionCode << std::endl;
+
+        std::string errorMessage = std::string("A crash occured, please send your ") + crashFilename + " file in the Discord server.";
+        MSG_BOX_ERROR(errorMessage.c_str());
+    }
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 {
-    //SetProcessDEPPolicy(PROCESS_DEP_ENABLE);
+    SetUnhandledExceptionFilter(CrashLogger);
+#if 0
+    // Crash test
+    * (int*)nullptr = 1;
+#endif
+
     enable_dpi_awareness();
 
 #ifdef DEBUG
-    // Delete crash file
+    // Delete stock crash file
     DeleteFileA("__codmp");
     DeleteFileA("__mohaa");
 #endif

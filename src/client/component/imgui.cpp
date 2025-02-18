@@ -63,6 +63,7 @@ namespace imgui
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
 
+		io.IniFilename = "iw1x_imgui.ini";
 		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Verdana.ttf", 16.0f);
 		style.WindowPadding.x += 8;
 		style.WindowPadding.y += 7;

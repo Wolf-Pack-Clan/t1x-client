@@ -2,10 +2,9 @@
 
 /*
 Size determined using Ghidra
-IMAGE_NT_HEADERS32 > IMAGE_OPTIONAL_HEADER32
-SizeOfImage - SizeOfHeaders
+IMAGE_NT_HEADERS32 -> IMAGE_OPTIONAL_HEADER32: SizeOfImage - SizeOfHeaders
 */
-#define BINARY_PAYLOAD_SIZE 0x15C1000
+constexpr auto BINARY_PAYLOAD_SIZE = 0x15C1000;
 
 #define WIN32_LEAN_AND_MEAN
 
@@ -24,11 +23,11 @@ SizeOfImage - SizeOfHeaders
 #undef min
 #endif
 
-#define MOD_NAME "iw1x"
+constexpr auto MOD_NAME = "iw1x";
 
-#define MSG_BOX_INFO(message) MessageBoxA(nullptr, message, MOD_NAME, MB_ICONINFORMATION);
-#define MSG_BOX_WARN(message) MessageBoxA(nullptr, message, MOD_NAME, MB_ICONWARNING);
-#define MSG_BOX_ERROR(message) MessageBoxA(nullptr, message, MOD_NAME, MB_ICONERROR | MB_SETFOREGROUND | MB_TOPMOST);
+#define MSG_BOX_INFO(message) MessageBoxA(nullptr, message, MOD_NAME, MB_ICONINFORMATION | MB_SETFOREGROUND);
+#define MSG_BOX_WARN(message) MessageBoxA(nullptr, message, MOD_NAME, MB_ICONWARNING | MB_SETFOREGROUND);
+#define MSG_BOX_ERROR(message) MessageBoxA(nullptr, message, MOD_NAME, MB_ICONERROR | MB_SETFOREGROUND);
 
 #include <cstring>
 #include <filesystem>
