@@ -23,11 +23,11 @@ namespace utils::hook
             {
                 this->~detour();
 
-                this->place_ = other.place_;
-                this->original_ = other.original_;
+                this->place = other.place;
+                this->original = other.original;
 
-                other.place_ = nullptr;
-                other.original_ = nullptr;
+                other.place = nullptr;
+                other.original = nullptr;
             }
 
             return *this;
@@ -58,8 +58,8 @@ namespace utils::hook
         [[nodiscard]] void* get_original() const;
 
     private:
-        void* place_{};
-        void* original_{};
+        void* place{};
+        void* original{};
     };
 
     void nop(void* place, size_t length);

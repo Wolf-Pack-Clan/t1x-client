@@ -3,15 +3,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-// min and max is required by gdi, therefore NOMINMAX won't work
-#ifdef max
-#undef max
-#endif
-
-#ifdef min
-#undef min
-#endif
-
 #include <string>
 #include <functional>
 #include <filesystem>
@@ -28,7 +19,7 @@ namespace utils::nt
 		explicit library(const std::string& name);
 		explicit library(HMODULE handle);
 
-		library(const library& a) : module_(a.module_)
+		library(const library& a) : module(a.module)
 		{
 		}
 
@@ -37,17 +28,10 @@ namespace utils::nt
 
 		operator bool() const;
 		operator HMODULE() const;
-
-		void unprotect() const;
-		void* get_entry_point() const;
 		size_t get_relative_entry_point() const;
 
 		bool is_valid() const;
-		std::string get_name() const;
-		std::string get_path() const;
-		std::string get_folder() const;
 		std::uint8_t* get_ptr() const;
-		void free();
 
 		HMODULE get_handle() const;
 
@@ -55,14 +39,14 @@ namespace utils::nt
 		T get_proc(const std::string& process) const
 		{
 			if (!this->is_valid()) T{};
-			return reinterpret_cast<T>(GetProcAddress(this->module_, process.data()));
+			return reinterpret_cast<T>(GetProcAddress(this->module, process.data()));
 		}
 
 		template <typename T>
 		T get_proc(const char* name) const
 		{
 			if (!this->is_valid()) T{};
-			return reinterpret_cast<T>(GetProcAddress(this->module_, name));
+			return reinterpret_cast<T>(GetProcAddress(this->module, name));
 		}
 
 		template <typename T>
@@ -103,11 +87,6 @@ namespace utils::nt
 		PIMAGE_OPTIONAL_HEADER get_optional_header() const;
 
 	private:
-		HMODULE module_;
+		HMODULE module;
 	};
-
-	__declspec(noreturn) void raise_hard_exception();
-	std::string load_resource(int id);
-
-	__declspec(noreturn) void terminate(uint32_t code = 0);
 }

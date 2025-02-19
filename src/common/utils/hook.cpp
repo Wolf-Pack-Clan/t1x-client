@@ -13,9 +13,7 @@ namespace utils::hook
             _()
             {
                 if (MH_Initialize() != MH_OK)
-                {
                     throw std::runtime_error("Failed to initialize MinHook");
-                }
             }
 
             ~_()
@@ -41,46 +39,44 @@ namespace utils::hook
 
     void detour::enable() const
     {
-        MH_EnableHook(this->place_);
+        MH_EnableHook(this->place);
     }
 
     void detour::disable() const
     {
-        MH_DisableHook(this->place_);
+        MH_DisableHook(this->place);
     }
 
-    void detour::create(void* place, void* target)
+    void detour::create(void* _place, void* target)
     {
         this->clear();
-        this->place_ = place;
+        this->place = _place;
 
-        MH_STATUS status = MH_CreateHook(this->place_, target, &this->original_);
+        MH_STATUS status = MH_CreateHook(this->place, target, &this->original);
         if (status != MH_OK)
             if (status != MH_ERROR_ALREADY_CREATED) // MH_STATUS can be MH_ERROR_ALREADY_CREATED for dll like ui_mp_x86
-                throw std::runtime_error(string::va("Unable to create hook at location: %p, MH_STATUS: %s", this->place_, MH_StatusToString(status)));
+                throw std::runtime_error(string::va("Unable to create hook at location: %p, MH_STATUS: %s", this->place, MH_StatusToString(status)));
 
         this->enable();
     }
 
-    void detour::create(const size_t place, void* target)
+    void detour::create(const size_t _place, void* target)
     {
-        this->create(reinterpret_cast<void*>(place), target);
+        this->create(reinterpret_cast<void*>(_place), target);
     }
 
     void detour::clear()
     {
-        if (this->place_)
-        {
-            MH_RemoveHook(this->place_);
-        }
+        if (this->place)
+            MH_RemoveHook(this->place);
 
-        this->place_ = nullptr;
-        this->original_ = nullptr;
+        this->place = nullptr;
+        this->original = nullptr;
     }
 
     void* detour::get_original() const
     {
-        return this->original_;
+        return this->original;
     }
 
     void nop(void* place, const size_t length)
