@@ -5,10 +5,12 @@ namespace scheduler
 	enum pipeline
 	{
 		async = 0,	// Asynchronuous pipeline, disconnected from the game
-		renderer,	// The game's rendering pipeline
-		server,		// The game's server thread
-		main,		// The game's main thread
-		count,
+
+		renderer,
+		server,
+		common,
+
+		count
 	};
 
 	static const bool cond_continue = false;

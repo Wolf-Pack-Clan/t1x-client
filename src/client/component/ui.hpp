@@ -8,6 +8,4 @@ namespace ui
 	extern game::cvar_t* cg_drawWeaponSelect;
 	extern game::cvar_t* cg_chatHeight;
 	extern game::cvar_t* con_boldgamemessagetime;
-
-	void ready_hook_cgame_mp();
 }

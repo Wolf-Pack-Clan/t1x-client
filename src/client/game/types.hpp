@@ -56,11 +56,13 @@ namespace game
 
 
 
-
-
-
-
-
+	/*typedef enum
+	{
+		CA_DISCONNECTED = 0,
+		CA_CONNECTING = 1,
+		CA_ACTIVE = 6,
+		// ...
+	} connstate_t;*/
 
 	/*typedef struct
 	{
@@ -84,12 +86,4 @@ namespace game
 		Window window;
 		// ...
 	} itemDef_t;*/
-
-
-	/*typedef enum
-	{
-		CA_ACTIVE = 6
-	} connstate_t;*/
-
-
 }

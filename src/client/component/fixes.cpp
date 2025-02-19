@@ -70,12 +70,6 @@ namespace fixes
 		return dest;
 	}
 	
-	void ready_hook_ui_mp()
-	{
-		// Prevent displaying servers twice (occurs if double click Refresh List)
-		UI_StartServerRefresh_hook.create(ABSOLUTE_UI_MP(0x4000ea90), UI_StartServerRefresh_stub);
-	}
-	
 	class component final : public component_interface
 	{
 	public:
@@ -93,6 +87,12 @@ namespace fixes
 			See https://github.com/xtnded/codextended-client/blob/45af251518a390ab08b1c8713a6a1544b70114a1/fixes.cpp#L21
 			*/
 			utils::hook::nop(0x0042d122, 5);
+		}
+		
+		void post_ui_mp() override
+		{
+			// Prevent displaying servers twice (occurs if double click Refresh List)
+			UI_StartServerRefresh_hook.create(ABSOLUTE_UI_MP(0x4000ea90), UI_StartServerRefresh_stub);
 		}
 	};
 }

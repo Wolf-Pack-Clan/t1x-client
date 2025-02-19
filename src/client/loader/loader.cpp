@@ -64,14 +64,14 @@ void loader::load_imports(const utils::nt::library& target, const utils::nt::lib
 	auto* const import_directory = &source.get_optional_header()->DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
 
 	auto* descriptor = PIMAGE_IMPORT_DESCRIPTOR(target.get_ptr() + import_directory->VirtualAddress);
-
+	
 	while (descriptor->Name)
 	{
 		std::string name = LPSTR(target.get_ptr() + descriptor->Name);
 
 		auto* name_table_entry = reinterpret_cast<uintptr_t*>(target.get_ptr() + descriptor->OriginalFirstThunk);
 		auto* address_table_entry = reinterpret_cast<uintptr_t*>(target.get_ptr() + descriptor->FirstThunk);
-
+		
 		if (!descriptor->OriginalFirstThunk)
 		{
 			name_table_entry = reinterpret_cast<uintptr_t*>(target.get_ptr() + descriptor->FirstThunk);
@@ -94,7 +94,11 @@ void loader::load_imports(const utils::nt::library& target, const utils::nt::lib
 				function_name = import->Name;
 				function_procname = function_name.data();
 			}
-
+#if 0
+			std::stringstream ss;
+			ss << "###### " << function_name << std::endl;
+			OutputDebugString(ss.str().c_str());
+#endif
 			if (this->import_resolver_) function = FARPROC(this->import_resolver_(name, function_name));
 			if (!function)
 			{

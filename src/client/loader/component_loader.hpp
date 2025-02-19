@@ -28,12 +28,8 @@ public:
 	static T* get()
 	{
 		for (const auto& component_ : get_components())
-		{
 			if (typeid(*component_.get()) == typeid(T))
-			{
 				return reinterpret_cast<T*>(component_.get());
-			}
-		}
 
 		return nullptr;
 	}
@@ -43,8 +39,11 @@ public:
 	static bool post_start();
 	static bool post_load();
 	static void post_unpack();
+
+	static void post_cgame();
+	static void post_ui_mp();
+	
 	static void pre_destroy();
-	static void clean();
 
 	static void* load_import(const std::string& library, const std::string& function);
 

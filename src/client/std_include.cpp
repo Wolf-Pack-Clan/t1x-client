@@ -5,7 +5,7 @@
 #pragma comment(linker, "/merge:.data=._data")
 
 /*
-Size obtained using Ghidra
+Size found using Ghidra
 IMAGE_NT_HEADERS32 -> IMAGE_OPTIONAL_HEADER32 -> SizeOfStackReserve
 */
 #pragma comment(linker, "/stack:0x800000")

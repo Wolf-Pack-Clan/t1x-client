@@ -84,34 +84,34 @@ namespace scheduler
 		volatile bool kill = false;
 		std::thread thread;
 		task_pipeline pipelines[pipeline::count];
-		utils::hook::detour r_end_frame_hook;
-
+		
+		utils::hook::detour Com_Frame_hook;
+		utils::hook::detour SV_Frame_hook;
+		utils::hook::detour RE_EndFrame_hook;
+		
 		void execute(const pipeline type)
 		{
 			assert(type >= 0 && type < pipeline::count);
 			pipelines[type].execute();
 		}
-
-		void r_end_frame_stub(int* frontEndMsec, int* backEndMsec)
+		
+		void RE_EndFrame_stub(int* frontEndMsec, int* backEndMsec)
 		{
 			execute(pipeline::renderer);
-			r_end_frame_hook.invoke<void>(frontEndMsec, backEndMsec);
+			RE_EndFrame_hook.invoke(frontEndMsec, backEndMsec);
 		}
-
 		void SV_Frame_stub(int msec)
 		{
-			game::SV_Frame(msec);
 			execute(pipeline::server);
+			SV_Frame_hook.invoke(msec);
 		}
-
-		void main_frame_stub()
+		void Com_Frame_stub()
 		{
-			execute(pipeline::main);
-			//game::Com_Frame_Try_Block_Function();
-			game::Com_Frame();
+			execute(pipeline::common);
+			Com_Frame_hook.invoke();
 		}
 	}
-
+	
 	void schedule(const std::function<bool()>& callback, const pipeline type, const std::chrono::milliseconds delay)
 	{
 		assert(type >= 0 && type < pipeline::count);
@@ -141,7 +141,7 @@ namespace scheduler
 			return cond_end;
 		}, type, delay);
 	}
-
+	
 	class component final : public component_interface
 	{
 	public:
@@ -159,18 +159,16 @@ namespace scheduler
 
 		void post_unpack() override
 		{
-			r_end_frame_hook.create(reinterpret_cast<void(*)(int*, int*)>(0x004de4b0), r_end_frame_stub); // RE_EndFrame
-			utils::hook::call(0x0046426f, main_frame_stub); // Com_Frame
-			utils::hook::call(reinterpret_cast<void(*)(int)>(0x004380df), SV_Frame_stub);
+			Com_Frame_hook.create(reinterpret_cast<void(*)>(0x00437f40), Com_Frame_stub);
+			SV_Frame_hook.create(reinterpret_cast<void(*)(int)>(0x0045b1d0), SV_Frame_stub);
+			RE_EndFrame_hook.create(reinterpret_cast<void(*)(int*, int*)>(0x004de4b0), RE_EndFrame_stub);
 		}
-
+		
 		void pre_destroy() override
 		{
 			kill = true;
 			if (thread.joinable())
-			{
 				thread.join();
-			}
 		}
 	};
 }

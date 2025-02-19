@@ -76,14 +76,6 @@ namespace movement
 		}
 	}
 	
-	void ready_hook_cgame_mp()
-	{
-		if (*game::clc_demoplaying != game::qtrue)
-		{
-			utils::hook::jump(ABSOLUTE_CGAME_MP(0x30032fe8), cg_zoomSensitivity_calculation_stub);
-		}
-	}
-	
 	class component final : public component_interface
 	{
 	public:
@@ -96,6 +88,12 @@ namespace movement
 			m_rawinput = game::Cvar_Get("m_rawinput", "0", CVAR_ARCHIVE);
 			
 			game::Cmd_AddCommand("lookback", Cmd_LookBack);
+		}
+
+		void post_cgame() override
+		{
+			if (*game::clc_demoplaying != game::qtrue)
+				utils::hook::jump(ABSOLUTE_CGAME_MP(0x30032fe8), cg_zoomSensitivity_calculation_stub);
 		}
 	};
 }

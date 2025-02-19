@@ -19,6 +19,18 @@ namespace game
 		return reinterpret_cast<game::weaponInfo_t**>(cg_weapons_ptr)[weaponNum];
 	}
 	
+	const char* Info_ValueForKey(const char* buffer, const char* key)
+	{
+		_asm
+		{
+			mov ebx, key;
+			mov ecx, buffer;
+
+			mov eax, 0x0044ada0;
+			call eax;
+		}
+	}
+	
 	namespace environment
 	{
 		bool mohaa = false;

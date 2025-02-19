@@ -32,7 +32,7 @@ namespace security
 		return false;
 	}
 
-	void CG_ServerCommand_stub()
+	static void CG_ServerCommand_stub()
 	{
 		auto cmd = game::Cmd_Argv(0);
 		if (*cmd == 'v')
@@ -51,7 +51,7 @@ namespace security
 		CG_ServerCommand_hook.invoke();
 	}
 
-	void CL_SystemInfoChanged_Cvar_Set_stub(const char* name, const char* value)
+	static void CL_SystemInfoChanged_Cvar_Set_stub(const char* name, const char* value)
 	{
 #if 0
 		std::ostringstream oss;
@@ -65,96 +65,18 @@ namespace security
 		game::Cvar_Set(name, value);
 	}
 
-	const char* Info_ValueForKey(const char* buffer, const char* key)
-	{
-		_asm
-		{
-			mov ebx, key;
-			mov ecx, buffer;
-
-			mov eax, 0x0044ada0;
-			call eax;
-		}
-	}
-
-	void CL_SystemInfoChanged_stub()
+	static void CL_SystemInfoChanged_stub()
 	{
 		char* cl_gameState_stringData = (char*)0x01436a7c;
 		int* cl_gameState_stringOffsets = (int*)0x01434a80;
 		char* systemInfo = cl_gameState_stringData + cl_gameState_stringOffsets[0];
-		const char* sv_pakNames = Info_ValueForKey(systemInfo, "sv_pakNames");
-		const char* sv_referencedPakNames = Info_ValueForKey(systemInfo, "sv_referencedPakNames");
+		const char* sv_pakNames = game::Info_ValueForKey(systemInfo, "sv_pakNames");
+		const char* sv_referencedPakNames = game::Info_ValueForKey(systemInfo, "sv_referencedPakNames");
 
 		if (strstr(sv_pakNames, "@") || strstr(sv_referencedPakNames, "@"))
 			game::Com_Error(game::ERR_DROP, "Non-pk3 download protection triggered");
 
 		CL_SystemInfoChanged_hook.invoke();
-	}
-
-
-
-
-
-
-
-
-
-
-#if 0
-	utils::hook::detour Item_RunScript_hook;
-	void disable()
-	{
-		Item_RunScript_hook.disable();
-	}
-	void enable()
-	{
-		Item_RunScript_hook.enable();
-	}
-	__declspec(naked) void Item_RunScript_stub()
-	{
-		_asm
-		{
-			push edx
-			push esi
-
-			call disable
-
-			pop esi
-			pop edx
-
-
-			mov eax, address_ui_mp
-			add eax, 0x000111d0
-			call eax
-			
-			//call enable
-
-			ret
-		}
-	}
-#endif
-	void ready_hook_ui_mp()
-	{
-		//Item_RunScript_hook.create(ABSOLUTE_UI_MP(0x400111d0), Item_RunScript_stub);
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-	void ready_hook_cgame_mp()
-	{
-		// Use a cvar whitelist for setClientCvar GSC method
-		CG_ServerCommand_hook.create(ABSOLUTE_CGAME_MP(0x3002e0d0), CG_ServerCommand_stub);
 	}
 	
 	class component final : public component_interface
@@ -169,6 +91,12 @@ namespace security
 			CL_SystemInfoChanged_hook.create(0x00415eb0, CL_SystemInfoChanged_stub);
 
 			cl_allowDownload = game::Cvar_Get("cl_allowDownload", "0", CVAR_ARCHIVE);
+		}
+
+		void post_cgame() override
+		{
+			// Use a cvar whitelist for setClientCvar GSC method
+			CG_ServerCommand_hook.create(ABSOLUTE_CGAME_MP(0x3002e0d0), CG_ServerCommand_stub);
 		}
 	};
 }

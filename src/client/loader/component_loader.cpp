@@ -1,9 +1,9 @@
 #include <std_include.hpp>
 #include "component_loader.hpp"
 
-void component_loader::register_component(std::unique_ptr<component_interface>&& component_)
+void component_loader::register_component(std::unique_ptr<component_interface>&& component)
 {
-	get_components().push_back(std::move(component_));
+	get_components().push_back(std::move(component));
 }
 
 bool component_loader::post_start()
@@ -14,10 +14,8 @@ bool component_loader::post_start()
 
 	try
 	{
-		for (const auto& component_ : get_components())
-		{
-			component_->post_start();
-		}
+		for (const auto& component : get_components())
+			component->post_start();
 	}
 	catch (premature_shutdown_trigger&)
 	{
@@ -33,14 +31,10 @@ bool component_loader::post_load()
 	if (handled) return true;
 	handled = true;
 
-	clean();
-
 	try
 	{
-		for (const auto& component_ : get_components())
-		{
-			component_->post_load();
-		}
+		for (const auto& component : get_components())
+			component->post_load();
 	}
 	catch (premature_shutdown_trigger&)
 	{
@@ -56,10 +50,19 @@ void component_loader::post_unpack()
 	if (handled) return;
 	handled = true;
 
-	for (const auto& component_ : get_components())
-	{
-		component_->post_unpack();
-	}
+	for (const auto& component : get_components())
+		component->post_unpack();
+}
+
+void component_loader::post_cgame()
+{
+	for (const auto& component : get_components())
+		component->post_cgame();
+}
+void component_loader::post_ui_mp()
+{
+	for (const auto& component : get_components())
+		component->post_ui_mp();
 }
 
 void component_loader::pre_destroy()
@@ -68,40 +71,19 @@ void component_loader::pre_destroy()
 	if (handled) return;
 	handled = true;
 
-	for (const auto& component_ : get_components())
-	{
-		component_->pre_destroy();
-	}
-}
-
-void component_loader::clean()
-{
-	auto& components = get_components();
-	for (auto i = components.begin(); i != components.end();)
-	{
-		if (!(*i)->is_supported())
-		{
-			(*i)->pre_destroy();
-			i = components.erase(i);
-		}
-		else
-		{
-			++i;
-		}
-	}
+	for (const auto& component : get_components())
+		component->pre_destroy();
 }
 
 void* component_loader::load_import(const std::string& library, const std::string& function)
 {
 	void* function_ptr = nullptr;
 
-	for (const auto& component_ : get_components())
+	for (const auto& component : get_components())
 	{
-		auto* const component_function_ptr = component_->load_import(library, function);
+		auto* const component_function_ptr = component->load_import(library, function);
 		if (component_function_ptr)
-		{
 			function_ptr = component_function_ptr;
-		}
 	}
 
 	return function_ptr;

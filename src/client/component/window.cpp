@@ -149,7 +149,7 @@ namespace window
 	
 	static void WM_INPUT_process(LPARAM lParam)
 	{
-		//// Don't update raw input when
+		//// Don't update raw input when:
 		if (imgui::displayed)
 			return;
 		// a .menu is displayed (except if it uses cl_bypassMouseInput)
@@ -244,12 +244,6 @@ namespace window
 			
 			Com_Init_hook.create(0x004375c0, Com_Init_stub);
 			IN_MouseMove_hook.create(0x00461850, IN_MouseMove_stub);
-
-
-
-
-
-			//utils::hook::nop(0x00466d0f, 5); // WIN_DisableAltTab
 		}
 	};
 }

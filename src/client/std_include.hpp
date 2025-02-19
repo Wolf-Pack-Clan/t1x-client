@@ -1,7 +1,7 @@
 #pragma once
 
 /*
-Size determined using Ghidra
+Size found using Ghidra
 IMAGE_NT_HEADERS32 -> IMAGE_OPTIONAL_HEADER32: SizeOfImage - SizeOfHeaders
 */
 constexpr auto BINARY_PAYLOAD_SIZE = 0x15C1000;
@@ -9,8 +9,6 @@ constexpr auto BINARY_PAYLOAD_SIZE = 0x15C1000;
 #define WIN32_LEAN_AND_MEAN
 
 #include <Windows.h>
-#include <shellapi.h>
-#include <ShlObj.h>
 #include <atlbase.h>
 #include <GL/gl.h>
 
@@ -29,7 +27,6 @@ constexpr auto MOD_NAME = "iw1x";
 #define MSG_BOX_WARN(message) MessageBoxA(nullptr, message, MOD_NAME, MB_ICONWARNING | MB_SETFOREGROUND);
 #define MSG_BOX_ERROR(message) MessageBoxA(nullptr, message, MOD_NAME, MB_ICONERROR | MB_SETFOREGROUND);
 
-#include <cstring>
 #include <filesystem>
 #include <mutex>
 #include <queue>
