@@ -1,10 +1,13 @@
 #include <std_include.hpp>
-#include "loader/component_loader.hpp"
-#include "game/game.hpp"
-#include "loader/loader.hpp"
+
 #include <io.hpp>
 #include <string.hpp>
 #include <hook.hpp>
+
+#include "loader/loader.hpp"
+#include "loader/component_loader.hpp"
+
+#include "stock/game.hpp"
 
 #include <dbghelp.h>
 #include <fstream>

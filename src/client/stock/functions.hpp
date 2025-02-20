@@ -4,6 +4,11 @@
 
 namespace game
 {
+	int Cmd_Argc();
+	char* Cmd_Argv(int arg);
+	weaponInfo_t* BG_GetInfoForWeapon(int weaponNum);
+	const char* Info_ValueForKey(const char* buffer, const char* key);
+	
 	WEAK symbol<void(float x, float y, int fontID, float scale, float* color, const char* text, float spaceBetweenChars, int maxChars, int arg9)> SCR_DrawString{ 0x004df570 };
 	WEAK symbol<cvar_t* (const char* name)> Cvar_FindVar{ 0x00439280 };
 	WEAK symbol<cvar_t* (const char* name, const char* value, int flags)> Cvar_Get{ 0x00439350 };

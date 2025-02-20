@@ -1,4 +1,4 @@
-#include "std_include.hpp"
+#include <std_include.hpp>
 
 #pragma comment(linker, "/merge:.text=._text")
 #pragma comment(linker, "/merge:.rdata=._rdata")

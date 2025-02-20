@@ -2,7 +2,7 @@
 #if 1
 #include <hook.hpp>
 #include "loader/component_loader.hpp"
-#include "game/game.hpp"
+#include "stock/game.hpp"
 
 #include "security.hpp"
 

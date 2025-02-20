@@ -1,5 +1,5 @@
 imgui = {
-	source = path.join(dependencies.basePath, "imgui"),
+	source = path.join(submodules.basePath, "imgui"),
 }
 
 function imgui.import()
@@ -36,4 +36,4 @@ function imgui.project()
 		kind "StaticLib"
 end
 
-table.insert(dependencies, imgui)
+table.insert(submodules, imgui)

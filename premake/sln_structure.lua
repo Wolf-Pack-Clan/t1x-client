@@ -1,7 +1,7 @@
-dependencies = { basePath = "./deps" }
+submodules = { basePath = "../submodules" }
 
-function dependencies.load()
-	dir = path.join(dependencies.basePath, "premake/*.lua")
+function submodules.load()
+	dir = path.join("submodules", "*.lua")
 	deps = os.matchfiles(dir)
 	for i, dep in pairs(deps) do
 		dep = dep:gsub(".lua", "")
@@ -9,32 +9,33 @@ function dependencies.load()
 	end
 end
 
-function dependencies.imports()
-	for i, proj in pairs(dependencies) do
+function submodules.imports()
+	for i, proj in pairs(submodules) do
 		if type(i) == 'number' then
 			proj.import()
 		end
 	end
 end
 
-function dependencies.projects()
-	for i, proj in pairs(dependencies) do
+function submodules.projects()
+	for i, proj in pairs(submodules) do
 		if type(i) == 'number' then
 			proj.project()
 		end
 	end
 end
 
-dependencies.load()
+submodules.load()
 
+-- Solution
 workspace "iw1x-client"
 configurations { "Debug", "Release" }
 platforms "Win32"
 architecture "x86"
 startproject "client"
-location "./build"
+location "../build"
 objdir "%{wks.location}/obj"
-targetdir "%{wks.location}/bin/%{cfg.platform}/%{cfg.buildcfg}"
+targetdir "%{wks.location}/bin/%{cfg.buildcfg}"
 language "C++"
 cppdialect "C++20"
 systemversion "latest"
@@ -73,21 +74,18 @@ project "client"
 kind "WindowedApp"
 targetname "iw1x"
 pchheader "std_include.hpp"
-pchsource "src/client/std_include.cpp"
-linkoptions { "/DYNAMICBASE:NO", "/SAFESEH:NO", "/LARGEADDRESSAWARE", "/LAST:._text", "/PDBCompress" }
-files { "./src/client/**.hpp", "./src/client/**.cpp" }
-includedirs {"./src/client", "./src/utils", "%{prj.location}/src"}
-resincludedirs { "$(ProjectDir)src" }
+pchsource "../src/client/std_include.cpp"
+includedirs { "../src/client", "../src/utils" }
+files { "../src/client/**.hpp", "../src/client/**.cpp" }
 links { "utils" }
-dependencies.imports()
+linkoptions { "/DYNAMICBASE:NO", "/SAFESEH:NO", "/LARGEADDRESSAWARE", "/LAST:._text", "/PDBCompress" }
+submodules.imports()
 
 -- Project: utils
 project "utils"
 kind "StaticLib"
-files { "./src/utils/**.hpp", "./src/utils/**.cpp" }
-includedirs { "./src/utils", "%{prj.location}/src" }
-resincludedirs { "$(ProjectDir)src" }
-dependencies.imports()
+files { "../src/utils/**.hpp", "../src/utils/**.cpp" }
+submodules.imports()
 
-group "Dependencies"
-dependencies.projects()
+group "Submodules"
+submodules.projects()

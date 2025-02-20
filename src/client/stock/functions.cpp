@@ -30,16 +30,4 @@ namespace game
 			call eax;
 		}
 	}
-	
-	namespace environment
-	{
-		bool mohaa = false;
-		std::string get_client_filename()
-		{
-			if (mohaa)
-				return "mohaa.exe";
-			else
-				return "CoDMP.exe";
-		}
-	}
 }

@@ -1,5 +1,5 @@
 minhook = {
-	source = path.join(dependencies.basePath, "minhook"),
+	source = path.join(submodules.basePath, "minhook"),
 }
 
 function minhook.import()
@@ -28,4 +28,4 @@ function minhook.project()
 		kind "StaticLib"
 end
 
-table.insert(dependencies, minhook)
+table.insert(submodules, minhook)

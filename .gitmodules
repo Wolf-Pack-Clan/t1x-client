@@ -1,9 +1,9 @@
-[submodule "deps/GSL"]
-	path = deps/GSL
+[submodule "submodules/GSL"]
+	path = submodules/GSL
 	url = https://github.com/microsoft/GSL.git
-[submodule "deps/minhook"]
-	path = deps/minhook
+[submodule "submodules/minhook"]
+	path = submodules/minhook
 	url = https://github.com/TsudaKageyu/minhook.git
-[submodule "deps/imgui"]
-	path = deps/imgui
+[submodule "submodules/imgui"]
+	path = submodules/imgui
 	url = https://github.com/ocornut/imgui.git
