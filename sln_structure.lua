@@ -75,17 +75,17 @@ targetname "iw1x"
 pchheader "std_include.hpp"
 pchsource "src/client/std_include.cpp"
 linkoptions { "/DYNAMICBASE:NO", "/SAFESEH:NO", "/LARGEADDRESSAWARE", "/LAST:._text", "/PDBCompress" }
-files { "./src/client/**.rc", "./src/client/**.hpp", "./src/client/**.cpp", "./src/resources/**.*" }
-includedirs {"./src/client", "./src/common", "%{prj.location}/src"}
+files { "./src/client/**.hpp", "./src/client/**.cpp" }
+includedirs {"./src/client", "./src/utils", "%{prj.location}/src"}
 resincludedirs { "$(ProjectDir)src" }
-links { "common" }
+links { "utils" }
 dependencies.imports()
 
--- Project: common
-project "common"
+-- Project: utils
+project "utils"
 kind "StaticLib"
-files { "./src/common/**.hpp", "./src/common/**.cpp" }
-includedirs { "./src/common", "%{prj.location}/src" }
+files { "./src/utils/**.hpp", "./src/utils/**.cpp" }
+includedirs { "./src/utils", "%{prj.location}/src" }
 resincludedirs { "$(ProjectDir)src" }
 dependencies.imports()
 

@@ -1,6 +1,6 @@
 #include <std_include.hpp>
 #if 1
-#include <utils/hook.hpp>
+#include <hook.hpp>
 #include "loader/component_loader.hpp"
 #include "game/game.hpp"
 
@@ -24,6 +24,9 @@ namespace movement
 	
 	static float scaledCgZoomSensitivity()
 	{
+		if (!*game::pm)
+			return originalCgZoomSensitivity();
+
 		bool weaponIsSniper = false;
 		
 		int weapon = (*game::pm)->ps->weapon;
@@ -92,8 +95,7 @@ namespace movement
 
 		void post_cgame() override
 		{
-			if (*game::clc_demoplaying != game::qtrue)
-				utils::hook::jump(ABSOLUTE_CGAME_MP(0x30032fe8), cg_zoomSensitivity_calculation_stub);
+			utils::hook::jump(ABSOLUTE_CGAME_MP(0x30032fe8), cg_zoomSensitivity_calculation_stub);
 		}
 	};
 }

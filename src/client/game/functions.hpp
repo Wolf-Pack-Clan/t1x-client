@@ -18,6 +18,9 @@ namespace game
 	WEAK symbol<void(int code, const char* fmt, ...)> Com_Error{ 0x00435ad0 };
 	WEAK symbol<void()> IN_MouseMove{ 0x00461850 };
 	WEAK symbol<void(int mstate)> IN_MouseEvent{ 0x004617d0 };
+
+
+
 	
 	
 

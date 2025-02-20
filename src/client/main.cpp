@@ -2,9 +2,9 @@
 #include "loader/component_loader.hpp"
 #include "game/game.hpp"
 #include "loader/loader.hpp"
-#include <utils/io.hpp>
-#include <utils/string.hpp>
-#include <utils/hook.hpp>
+#include <io.hpp>
+#include <string.hpp>
+#include <hook.hpp>
 
 #include <dbghelp.h>
 #include <fstream>

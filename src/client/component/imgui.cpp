@@ -2,7 +2,7 @@
 #if 1
 #include "loader/component_loader.hpp"
 #include "game/game.hpp"
-#include <utils/string.hpp>
+#include <string.hpp>
 #include "imgui.hpp"
 
 #include "security.hpp"
@@ -41,13 +41,13 @@ namespace imgui
 		{
 			displayed = true;
 			game::IN_DeactivateMouse();
-			*reinterpret_cast<int*>(0x8e2520) = 0; // mouseActive
-			*reinterpret_cast<int*>(0x8e2524) = 0; // mouseInitialized
+			*game::mouseActive = game::qfalse;
+			*game::mouseInitialized = game::qfalse;
 		}
 		else
 		{
 			displayed = false;
-			*reinterpret_cast<int*>(0x8e2524) = 1; // mouseInitialized
+			*game::mouseInitialized = game::qtrue;
 			game::IN_ActivateMouse();
 		}
 	}

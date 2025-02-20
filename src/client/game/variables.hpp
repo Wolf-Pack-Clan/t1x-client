@@ -34,7 +34,8 @@ namespace game
 	WEAK symbol<qboolean> refreshActive{ 0x401EA698, BASE_UI_MP };
 	WEAK symbol<qboolean> clc_demoplaying{ 0x015ef004 };
 	WEAK symbol<vm_t*> cgvm{ 0x01617348 };
-
+	WEAK symbol<qboolean> mouseActive{ 0x8e2520 };
+	WEAK symbol<qboolean> mouseInitialized{ 0x8e2524 };
 
 
 

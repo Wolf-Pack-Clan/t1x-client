@@ -9,7 +9,7 @@ extern DWORD address_cgame_mp;
 extern DWORD address_ui_mp;
 
 #define ABSOLUTE_CGAME_MP(relative) (address_cgame_mp + (relative - BASE_CGAME_MP))
-#define ABSOLUTE_UI_MP(relative)	(address_ui_mp + (relative - BASE_UI_MP))
+#define ABSOLUTE_UI_MP(relative) (address_ui_mp + (relative - BASE_UI_MP))
 
 namespace game
 {

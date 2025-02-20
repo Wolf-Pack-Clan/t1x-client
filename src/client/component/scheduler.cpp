@@ -1,12 +1,12 @@
 #include <std_include.hpp>
 #if 1
-#include <utils/hook.hpp>
+#include <hook.hpp>
 #include "loader/component_loader.hpp"
 #include "game/game.hpp"
 
 #include "scheduler.hpp"
-#include <utils/concurrency.hpp>
-#include <utils/thread.hpp>
+#include <concurrency.hpp>
+#include <thread.hpp>
 
 namespace scheduler
 {
