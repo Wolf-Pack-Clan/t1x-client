@@ -1,10 +1,7 @@
-#include <pch.hpp>
+#include "pch.h"
 #if 1
-#include <shared.hpp>
-#include <hook.hpp>
-#include "loader/component_loader.hpp"
-
-#include "view.hpp"
+#include "shared.h"
+#include "view.h"
 
 namespace view
 {

@@ -1,6 +1,10 @@
 #pragma once
+
+#include "nt.h"
+#include "_string.h"
+
 #include <thread>
-#include "nt.hpp"
+#include <gsl/gsl>
 
 namespace utils::thread
 {

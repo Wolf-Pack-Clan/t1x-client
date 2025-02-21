@@ -1,10 +1,11 @@
-#include <pch.hpp>
+#include "pch.h"
 #if 1
-#include <shared.hpp>
-#include <hook.hpp>
-#include "loader/component_loader.hpp"
+#include "shared.h"
+#include "hook.h"
+#include "loader/component_loader.h"
 
-#include "window.hpp"
+#include "window.h"
+#include "scheduler.h"
 
 namespace test
 {
@@ -20,6 +21,10 @@ namespace test
 		void post_unpack() override
 		{
 			stock::Cmd_AddCommand("test", Command_test);
+
+
+
+
 		}
 	};
 }

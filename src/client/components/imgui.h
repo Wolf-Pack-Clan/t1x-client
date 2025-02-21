@@ -1,4 +1,9 @@
-#pragma once
+#include "_string.h"
+#include "loader/component_loader.h"
+#include "security.h"
+#include "ui.h"
+#include "movement.h"
+#include "view.h"
 
 namespace imgui
 {

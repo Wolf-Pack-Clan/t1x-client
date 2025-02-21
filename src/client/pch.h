@@ -36,6 +36,4 @@ constexpr auto BINARY_PAYLOAD_SIZE = 0x15C1000;
 
 constexpr auto MOD_NAME = "iw1x";
 
-#define WEAK __declspec(selectany)
-
 using namespace std::literals;

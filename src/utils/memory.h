@@ -1,5 +1,7 @@
 #pragma once
 
+#include "nt.h"
+
 #include <mutex>
 #include <vector>
 

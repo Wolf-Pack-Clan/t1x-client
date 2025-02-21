@@ -1,5 +1,8 @@
 #pragma once
 
+#include "nt.h"
+
+#include <fstream>
 #include <string>
 
 namespace utils::io

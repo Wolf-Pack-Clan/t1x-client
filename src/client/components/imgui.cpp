@@ -1,15 +1,7 @@
-#include <pch.hpp>
+#include "pch.h"
 #if 1
-#include <shared.hpp>
-#include <string.hpp>
-#include "loader/component_loader.hpp"
-
-#include "imgui.hpp"
-
-#include "security.hpp"
-#include "ui.hpp"
-#include "movement.hpp"
-#include "view.hpp"
+#include "shared.h"
+#include "imgui.h"
 
 namespace imgui
 {

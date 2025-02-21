@@ -1,5 +1,3 @@
-#pragma once
-
 namespace stock
 {
 	typedef unsigned char byte;

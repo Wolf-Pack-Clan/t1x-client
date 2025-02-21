@@ -1,4 +1,5 @@
-#pragma once
+#include "hook.h"
+#include "loader/component_loader.h"
 
 namespace security
 {

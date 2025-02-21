@@ -1,10 +1,7 @@
-#include <pch.hpp>
+#include "pch.h"
 #if 1
-#include <shared.hpp>
-#include <hook.hpp>
-#include "loader/component_loader.hpp"
-
-#include "scheduler.hpp"
+#include "shared.h"
+#include "ui.h"
 
 namespace ui
 {

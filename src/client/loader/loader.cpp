@@ -1,9 +1,6 @@
-#include <pch.hpp>
+#include "pch.h"
 
-#include <hook.hpp>
-#include <string.hpp>
-
-#include "loader.hpp"
+#include "loader.h"
 
 FARPROC loader::load(const utils::nt::library& library, const std::string& buffer) const
 {

@@ -1,5 +1,6 @@
-#pragma once
-#include <nt.hpp>
+#include "hook.h"
+#include "nt.h"
+#include "_string.h"
 
 class loader final
 {

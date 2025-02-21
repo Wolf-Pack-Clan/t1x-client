@@ -1,6 +1,9 @@
 #pragma once
 
-#include "nt.hpp"
+#include "nt.h"
+#include "_string.h"
+
+#include <MinHook.h>
 
 namespace utils::hook
 {

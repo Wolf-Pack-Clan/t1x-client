@@ -1,5 +1,10 @@
 #pragma once
 
+#include "hook.h"
+#include "concurrency.h"
+#include "thread.h"
+#include "loader/component_loader.h"
+
 namespace scheduler
 {
 	enum pipeline

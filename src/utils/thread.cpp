@@ -1,7 +1,4 @@
-#include "thread.hpp"
-#include "string.hpp"
-
-#include <gsl/gsl>
+#include "thread.h"
 
 namespace utils::thread
 {

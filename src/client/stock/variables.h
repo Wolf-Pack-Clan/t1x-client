@@ -1,5 +1,3 @@
-#pragma once
-
 namespace stock
 {
 	constexpr auto MAX_STRING_CHARS = 1024;

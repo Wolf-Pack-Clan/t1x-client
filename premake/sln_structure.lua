@@ -73,18 +73,18 @@ fatalwarnings { "All" }
 project "client"
 kind "WindowedApp"
 targetname "iw1x"
-pchheader "pch.hpp"
+pchheader "pch.h"
 pchsource "../src/client/pch.cpp"
 includedirs { "../src/client", "../src/utils" }
-files { "../src/client/**.hpp", "../src/client/**.cpp" }
+files { "../src/client/**.h", "../src/client/**.cpp", "../src/client/**.rc" }
 links { "utils" }
-linkoptions { "/DYNAMICBASE:NO", "/SAFESEH:NO", "/LARGEADDRESSAWARE", "/LAST:._text", "/PDBCompress" }
+linkoptions { "/DYNAMICBASE:NO", "/LAST:._text" }
 submodules.imports()
 
 -- Project: utils
 project "utils"
 kind "StaticLib"
-files { "../src/utils/**.hpp", "../src/utils/**.cpp" }
+files { "../src/utils/**.h", "../src/utils/**.cpp" }
 submodules.imports()
 
 group "Submodules"

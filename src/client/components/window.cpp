@@ -1,17 +1,7 @@
-#include <pch.hpp>
+#include "pch.h"
 #if 1
-#include <shared.hpp>
-#include <hook.hpp>
-#include <string.hpp>
-#include "loader/component_loader.hpp"
-
-#include "window.hpp"
-
-#include "imgui.hpp"
-#include "movement.hpp"
-#include "scheduler.hpp"
-
-#include <hidusage.h>
+#include "shared.h"
+#include "window.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

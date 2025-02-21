@@ -1,7 +1,4 @@
-#include "hook.hpp"
-#include "string.hpp"
-
-#include <MinHook.h>
+#include "hook.h"
 
 namespace utils::hook
 {

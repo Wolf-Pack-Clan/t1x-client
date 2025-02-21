@@ -1,6 +1,4 @@
-#include "string.hpp"
-
-#include "nt.hpp"
+#include "_string.h"
 
 namespace utils::string
 {

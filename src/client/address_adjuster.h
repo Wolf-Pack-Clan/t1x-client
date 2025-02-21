@@ -1,4 +1,4 @@
-#pragma once
+#define WEAK __declspec(selectany)
 
 constexpr auto BASE_CGAME_MP = 0x30000000;
 constexpr auto BASE_UI_MP = 0x40000000;

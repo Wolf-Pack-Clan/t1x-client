@@ -1,4 +1,6 @@
-#pragma once
+#include "hook.h"
+#include "scheduler.h"
+#include "loader/component_loader.h"
 
 namespace ui
 {

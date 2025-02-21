@@ -1,11 +1,11 @@
-#include <pch.hpp>
+#include "pch.h"
 
-#include <io.hpp>
-#include <string.hpp>
-#include <hook.hpp>
+#include "hook.h"
+#include "string.h"
+#include "io.h"
 
-#include "loader/loader.hpp"
-#include "loader/component_loader.hpp"
+#include "loader/loader.h"
+#include "loader/component_loader.h"
 
 bool clientNamedMohaa = false;
 DWORD address_cgame_mp;
