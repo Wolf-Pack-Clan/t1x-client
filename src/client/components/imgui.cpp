@@ -1,8 +1,8 @@
-#include <std_include.hpp>
+#include <pch.hpp>
 #if 1
+#include <shared.hpp>
 #include <string.hpp>
 #include "loader/component_loader.hpp"
-#include "stock/game.hpp"
 
 #include "imgui.hpp"
 
@@ -41,21 +41,21 @@ namespace imgui
 		if (!displayed)
 		{
 			displayed = true;
-			game::IN_DeactivateMouse();
-			*game::mouseActive = game::qfalse;
-			*game::mouseInitialized = game::qfalse;
+			stock::IN_DeactivateMouse();
+			*stock::mouseActive = stock::qfalse;
+			*stock::mouseInitialized = stock::qfalse;
 		}
 		else
 		{
 			displayed = false;
-			*game::mouseInitialized = game::qtrue;
-			game::IN_ActivateMouse();
+			*stock::mouseInitialized = stock::qtrue;
+			stock::IN_ActivateMouse();
 		}
 	}
 
 	static void init(HDC hdc)
 	{
-		hWnd_during_init = *game::hWnd;
+		hWnd_during_init = *stock::hWnd;
 		imguiWglContext = wglCreateContext(hdc);
 
 		IMGUI_CHECKVERSION();
@@ -69,7 +69,7 @@ namespace imgui
 		style.WindowPadding.x += 8;
 		style.WindowPadding.y += 7;
 
-		ImGui_ImplWin32_InitForOpenGL(*game::hWnd);
+		ImGui_ImplWin32_InitForOpenGL(*stock::hWnd);
 		ImGui_ImplOpenGL2_Init();
 
 		initialized = true;
@@ -200,21 +200,21 @@ namespace imgui
 
 	void menu_updates_settings()
 	{
-		game::Cvar_Set(movement::sensitivity_adsScaleEnable->name, sensitivity_adsScaleEnable ? "1" : "0");
-		game::Cvar_Set(movement::sensitivity_adsScale->name, utils::string::va("%.2f", sensitivity_adsScale));
-		game::Cvar_Set(movement::sensitivity_adsScaleSniperEnable->name, sensitivity_adsScaleSniperEnable ? "1" : "0");
-		game::Cvar_Set(movement::sensitivity_adsScaleSniper->name, utils::string::va("%.2f", sensitivity_adsScaleSniper));
-		game::Cvar_Set(ui::cg_drawDisconnect->name, cg_drawDisconnect ? "1" : "0");
-		game::Cvar_Set(ui::cg_drawWeaponSelect->name, cg_drawWeaponSelect ? "1" : "0");
-		game::Cvar_Set(ui::cg_drawFPS->name, cg_drawFPS ? "1" : "0");
-		game::Cvar_Set(ui::cg_chatHeight->name, utils::string::va("%i", cg_chatHeight));
-		game::Cvar_Set(ui::con_boldgamemessagetime->name, utils::string::va("%i", con_boldgamemessagetime));
-		game::Cvar_Set(ui::cg_lagometer->name, cg_lagometer ? "1" : "0");
-		game::Cvar_Set(security::cl_allowDownload->name, cl_allowDownload ? "0" : "1");
-		game::Cvar_Set(movement::m_rawinput->name, m_rawinput ? "1" : "0");
-		game::Cvar_Set(view::cg_fov->name, utils::string::va("%.2f", cg_fov));
-		game::Cvar_Set(view::cg_fovScaleEnable->name, cg_fovScaleEnable ? "1" : "0");
-		game::Cvar_Set(view::cg_fovScale->name, utils::string::va("%.2f", cg_fovScale));
+		stock::Cvar_Set(movement::sensitivity_adsScaleEnable->name, sensitivity_adsScaleEnable ? "1" : "0");
+		stock::Cvar_Set(movement::sensitivity_adsScale->name, utils::string::va("%.2f", sensitivity_adsScale));
+		stock::Cvar_Set(movement::sensitivity_adsScaleSniperEnable->name, sensitivity_adsScaleSniperEnable ? "1" : "0");
+		stock::Cvar_Set(movement::sensitivity_adsScaleSniper->name, utils::string::va("%.2f", sensitivity_adsScaleSniper));
+		stock::Cvar_Set(ui::cg_drawDisconnect->name, cg_drawDisconnect ? "1" : "0");
+		stock::Cvar_Set(ui::cg_drawWeaponSelect->name, cg_drawWeaponSelect ? "1" : "0");
+		stock::Cvar_Set(ui::cg_drawFPS->name, cg_drawFPS ? "1" : "0");
+		stock::Cvar_Set(ui::cg_chatHeight->name, utils::string::va("%i", cg_chatHeight));
+		stock::Cvar_Set(ui::con_boldgamemessagetime->name, utils::string::va("%i", con_boldgamemessagetime));
+		stock::Cvar_Set(ui::cg_lagometer->name, cg_lagometer ? "1" : "0");
+		stock::Cvar_Set(security::cl_allowDownload->name, cl_allowDownload ? "0" : "1");
+		stock::Cvar_Set(movement::m_rawinput->name, m_rawinput ? "1" : "0");
+		stock::Cvar_Set(view::cg_fov->name, utils::string::va("%.2f", cg_fov));
+		stock::Cvar_Set(view::cg_fovScaleEnable->name, cg_fovScaleEnable ? "1" : "0");
+		stock::Cvar_Set(view::cg_fovScale->name, utils::string::va("%.2f", cg_fovScale));
 	}
 
 	void end_frame()

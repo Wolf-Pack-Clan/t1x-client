@@ -1,8 +1,8 @@
-#include <std_include.hpp>
+#include <pch.hpp>
 #if 1
+#include <shared.hpp>
 #include <hook.hpp>
 #include "loader/component_loader.hpp"
-#include "stock/game.hpp"
 
 namespace fixes
 {
@@ -30,9 +30,9 @@ namespace fixes
 		}
 	}
 	
-	static void UI_StartServerRefresh_stub(game::qboolean full)
+	static void UI_StartServerRefresh_stub(stock::qboolean full)
 	{
-		if (*game::refreshActive)
+		if (*stock::refreshActive)
 			return;
 		UI_StartServerRefresh_hook.invoke(full);
 	}
@@ -60,7 +60,7 @@ namespace fixes
 	}
 	static char* CL_SetServerInfo_hostname_strncpy_stub(char* dest, const char* src, int destsize)
 	{
-		char hostname[MAX_STRING_CHARS];
+		char hostname[stock::MAX_STRING_CHARS];
 		strncpy_s(hostname, sizeof(hostname), src, _TRUNCATE);
 		Q_CleanStr_keep_colors(hostname);
 #pragma warning(push)

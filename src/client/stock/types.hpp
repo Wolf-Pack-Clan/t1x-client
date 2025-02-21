@@ -1,6 +1,6 @@
 #pragma once
 
-namespace game
+namespace stock
 {
 	typedef unsigned char byte;
 	typedef enum { qfalse, qtrue } qboolean;

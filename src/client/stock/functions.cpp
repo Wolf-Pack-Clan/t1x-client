@@ -1,8 +1,11 @@
-#include <std_include.hpp>
-#include "game.hpp"
+#include <pch.hpp>
 
-namespace game
+#include <shared.hpp>
+
+namespace stock
 {
+	uintptr_t addr_CL_MouseEvent = 0x0040b0a0;
+
 	int Cmd_Argc()
 	{
 		return *cmd_argc;
@@ -13,10 +16,10 @@ namespace game
 		return cmd_argv[arg];
 	}
 	
-	game::weaponInfo_t* BG_GetInfoForWeapon(int weaponNum)
+	weaponInfo_t* BG_GetInfoForWeapon(int weaponNum)
 	{
-		auto cg_weapons_ptr = *reinterpret_cast<uintptr_t*>(*game::cg_weapons);
-		return reinterpret_cast<game::weaponInfo_t**>(cg_weapons_ptr)[weaponNum];
+		auto cg_weapons_ptr = *reinterpret_cast<uintptr_t*>(*cg_weapons);
+		return reinterpret_cast<weaponInfo_t**>(cg_weapons_ptr)[weaponNum];
 	}
 	
 	const char* Info_ValueForKey(const char* buffer, const char* key)
@@ -25,9 +28,20 @@ namespace game
 		{
 			mov ebx, key;
 			mov ecx, buffer;
-
 			mov eax, 0x0044ada0;
 			call eax;
+		}
+	}
+	
+	void CL_MouseEvent(int _dx, int _dy)
+	{
+		_asm
+		{
+			mov ecx, _dx;
+			push eax;
+			mov eax, _dy;
+			call addr_CL_MouseEvent;
+			add esp, 4;
 		}
 	}
 }

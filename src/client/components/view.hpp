@@ -2,7 +2,7 @@
 
 namespace view
 {
-	extern game::cvar_t* cg_fov;
-	extern game::cvar_t* cg_fovScaleEnable;
-	extern game::cvar_t* cg_fovScale;
+	extern stock::cvar_t* cg_fov;
+	extern stock::cvar_t* cg_fovScaleEnable;
+	extern stock::cvar_t* cg_fovScale;
 }

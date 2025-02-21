@@ -1,4 +1,4 @@
-#include <std_include.hpp>
+#include <pch.hpp>
 
 #include <io.hpp>
 #include <string.hpp>
@@ -7,14 +7,23 @@
 #include "loader/loader.hpp"
 #include "loader/component_loader.hpp"
 
-#include "stock/game.hpp"
-
-#include <dbghelp.h>
-#include <fstream>
-
+bool clientNamedMohaa = false;
 DWORD address_cgame_mp;
 DWORD address_ui_mp;
 utils::hook::detour hook_GetModuleFileNameW;
+
+static std::string get_client_filename()
+{
+    return clientNamedMohaa ? "mohaa.exe" : "CoDMP.exe";
+}
+
+static void enable_dpi_awareness()
+{
+    const utils::nt::library user32{ "user32.dll" };
+    const auto set_dpi = user32 ? user32.get_proc<BOOL(WINAPI*)(DPI_AWARENESS_CONTEXT)>("SetProcessDpiAwarenessContext") : nullptr;
+    if (set_dpi)
+        set_dpi(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+}
 
 static LONG WINAPI CrashLogger(EXCEPTION_POINTERS* exceptionPointers)
 {
@@ -38,17 +47,10 @@ static LONG WINAPI CrashLogger(EXCEPTION_POINTERS* exceptionPointers)
         logFile << "Exception Code: 0x" << std::hex << exceptionCode << std::endl;
 
         std::string errorMessage = std::string("A crash occured, please send your ") + crashFilename + " file in the Discord server.";
-        MSG_BOX_ERROR(errorMessage.c_str());
+
+        MessageBoxA(NULL, errorMessage.c_str(), MOD_NAME, MB_ICONERROR | MB_SETFOREGROUND);
     }
     return EXCEPTION_EXECUTE_HANDLER;
-}
-
-static void enable_dpi_awareness()
-{
-    const utils::nt::library user32{ "user32.dll" };
-    const auto set_dpi = user32 ? user32.get_proc<BOOL(WINAPI*)(DPI_AWARENESS_CONTEXT)>("SetProcessDpiAwarenessContext") : nullptr;
-    if (set_dpi)
-        set_dpi(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 }
 
 [[noreturn]] static void WINAPI stub_ExitProcess(const int code)
@@ -105,7 +107,7 @@ static DWORD WINAPI stub_GetModuleFileNameA(HMODULE hModule, LPSTR lpFilename, D
     if (!strcmp(PathFindFileNameA(lpFilename), "iw1x.exe"))
     {
         std::filesystem::path path = lpFilename;
-        auto binary = game::environment::get_client_filename();
+        auto binary = get_client_filename();
         path.replace_filename(binary);
         std::string pathStr = path.string();
         std::copy(pathStr.begin(), pathStr.end(), lpFilename);
@@ -127,7 +129,7 @@ static DWORD WINAPI stub_GetModuleFileNameW(HMODULE hModule, LPWSTR lpFilename, 
     {
         std::filesystem::path pathFs = pathStr;
 
-        auto client_filename = game::environment::get_client_filename();
+        auto client_filename = get_client_filename();
         pathFs.replace_filename(client_filename);
         pathStr = pathFs.string();
 
@@ -165,9 +167,9 @@ static FARPROC load_binary()
     // Check if the CoD file is named mohaa
     std::filesystem::path currentPath_mohaa_test = std::filesystem::current_path() / "mohaa.exe";
     if (utils::io::file_exists(currentPath_mohaa_test.string()))
-        game::environment::mohaa = true;
+        clientNamedMohaa = true;
 
-    auto client_filename = game::environment::get_client_filename();
+    auto client_filename = get_client_filename();
 
     std::string data;
     if (!utils::io::read_file(client_filename, &data))
@@ -218,7 +220,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
     }
     catch (std::exception& ex)
     {
-        MSG_BOX_ERROR(ex.what());
+        MessageBoxA(NULL, ex.what(), MOD_NAME, MB_ICONERROR | MB_SETFOREGROUND);
         return 1;
     }
 

@@ -1,15 +1,12 @@
-#include <std_include.hpp>
+#include <pch.hpp>
 #if 1
+#include <shared.hpp>
 #include <hook.hpp>
 #include "loader/component_loader.hpp"
-#include "stock/game.hpp"
-
-#include "security.hpp"
 
 namespace security
 {
-	game::cvar_t* cl_allowDownload;
-
+	stock::cvar_t* cl_allowDownload;
 	utils::hook::detour CG_ServerCommand_hook;
 	utils::hook::detour CL_SystemInfoChanged_hook;
 	
@@ -34,10 +31,10 @@ namespace security
 
 	static void CG_ServerCommand_stub()
 	{
-		auto cmd = game::Cmd_Argv(0);
+		auto cmd = stock::Cmd_Argv(0);
 		if (*cmd == 'v')
 		{
-			auto cvar_name = game::Cmd_Argv(1);
+			auto cvar_name = stock::Cmd_Argv(1);
 #if 0
 			std::ostringstream oss;
 			oss << "####### CG_ServerCommand_stub: " << cvar_name << "\n";
@@ -62,7 +59,7 @@ namespace security
 
 		if (!cvarIsInWhitelist(name))
 			return;
-		game::Cvar_Set(name, value);
+		stock::Cvar_Set(name, value);
 	}
 
 	static void CL_SystemInfoChanged_stub()
@@ -70,11 +67,11 @@ namespace security
 		char* cl_gameState_stringData = (char*)0x01436a7c;
 		int* cl_gameState_stringOffsets = (int*)0x01434a80;
 		char* systemInfo = cl_gameState_stringData + cl_gameState_stringOffsets[0];
-		const char* sv_pakNames = game::Info_ValueForKey(systemInfo, "sv_pakNames");
-		const char* sv_referencedPakNames = game::Info_ValueForKey(systemInfo, "sv_referencedPakNames");
+		const char* sv_pakNames = stock::Info_ValueForKey(systemInfo, "sv_pakNames");
+		const char* sv_referencedPakNames = stock::Info_ValueForKey(systemInfo, "sv_referencedPakNames");
 
 		if (strstr(sv_pakNames, "@") || strstr(sv_referencedPakNames, "@"))
-			game::Com_Error(game::ERR_DROP, "Non-pk3 download protection triggered");
+			stock::Com_Error(stock::ERR_DROP, "Non-pk3 download protection triggered");
 
 		CL_SystemInfoChanged_hook.invoke();
 	}
@@ -90,7 +87,7 @@ namespace security
 			// Check in sv_pakNames and sv_referencedPakNames for an indicator of a non-pk3 file incoming download
 			CL_SystemInfoChanged_hook.create(0x00415eb0, CL_SystemInfoChanged_stub);
 
-			cl_allowDownload = game::Cvar_Get("cl_allowDownload", "0", CVAR_ARCHIVE);
+			cl_allowDownload = stock::Cvar_Get("cl_allowDownload", "0", stock::CVAR_ARCHIVE);
 		}
 
 		void post_cgame() override

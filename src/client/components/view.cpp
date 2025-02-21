@@ -1,21 +1,21 @@
-#include <std_include.hpp>
+#include <pch.hpp>
 #if 1
+#include <shared.hpp>
 #include <hook.hpp>
 #include "loader/component_loader.hpp"
-#include "stock/game.hpp"
 
 #include "view.hpp"
 
 namespace view
 {
-	game::cvar_t* cg_fov;
-	game::cvar_t* cg_fovScaleEnable;
-	game::cvar_t* cg_fovScale;
+	stock::cvar_t* cg_fov;
+	stock::cvar_t* cg_fovScaleEnable;
+	stock::cvar_t* cg_fovScale;
 	
 	static float scaledFOV(float fov)
 	{
 		int* flag = (int*)ABSOLUTE_CGAME_MP(0x302071dc); // Might be cg.snap->ps.eFlags
-		if (*flag & EF_MG42_ACTIVE)
+		if (*flag & stock::EF_MG42_ACTIVE)
 			return 55;
 
 		if (cg_fovScaleEnable->integer)
@@ -48,9 +48,9 @@ namespace view
 	public:
 		void post_unpack() override
 		{
-			cg_fov = game::Cvar_Get("cg_fov", "80", CVAR_ARCHIVE);
-			cg_fovScaleEnable = game::Cvar_Get("cg_fovScaleEnable", "0", CVAR_ARCHIVE);
-			cg_fovScale = game::Cvar_Get("cg_fovScale", "1", CVAR_ARCHIVE);
+			cg_fov = stock::Cvar_Get("cg_fov", "80", stock::CVAR_ARCHIVE);
+			cg_fovScaleEnable = stock::Cvar_Get("cg_fovScaleEnable", "0", stock::CVAR_ARCHIVE);
+			cg_fovScale = stock::Cvar_Get("cg_fovScale", "1", stock::CVAR_ARCHIVE);
 		}
 
 		void post_cgame() override

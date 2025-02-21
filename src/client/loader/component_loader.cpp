@@ -1,4 +1,5 @@
-#include <std_include.hpp>
+#include <pch.hpp>
+
 #include "component_loader.hpp"
 
 void component_loader::register_component(std::unique_ptr<component_interface>&& component)

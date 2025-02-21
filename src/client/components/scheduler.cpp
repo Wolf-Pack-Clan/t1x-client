@@ -1,10 +1,9 @@
-#include <std_include.hpp>
+#include <pch.hpp>
 #if 1
 #include <hook.hpp>
 #include <concurrency.hpp>
 #include <thread.hpp>
 #include "loader/component_loader.hpp"
-#include "stock/game.hpp"
 
 #include "scheduler.hpp"
 

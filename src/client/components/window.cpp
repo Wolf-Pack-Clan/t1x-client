@@ -1,12 +1,15 @@
-#include <std_include.hpp>
+#include <pch.hpp>
 #if 1
+#include <shared.hpp>
 #include <hook.hpp>
 #include <string.hpp>
 #include "loader/component_loader.hpp"
-#include "stock/game.hpp"
+
+#include "window.hpp"
 
 #include "imgui.hpp"
 #include "movement.hpp"
+#include "scheduler.hpp"
 
 #include <hidusage.h>
 
@@ -18,18 +21,21 @@ namespace window
 	int rawinput_y_current = 0;
 	int rawinput_x_old = 0;
 	int rawinput_y_old = 0;
-
 	HHOOK hHook;
 
-	game::cvar_t* r_fullscreen;
-	game::cvar_t* cl_bypassMouseInput;
+	stock::cvar_t* r_fullscreen;
+	stock::cvar_t* cl_bypassMouseInput;
+	utils::hook::detour hook_Com_Init;
+	utils::hook::detour hook_IN_MouseMove;
 
-	utils::hook::detour Com_Init_hook;
-	utils::hook::detour IN_MouseMove_hook;
+	void MSG(const std::string& text, UINT flags)
+	{
+		scheduler::once([text, flags]() { MessageBoxA(*stock::hWnd, text.c_str(), MOD_NAME, flags); });
+	}
 
 	static LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 	{
-		if (GetForegroundWindow() == *game::hWnd)
+		if (GetForegroundWindow() == *stock::hWnd)
 		{
 			if (nCode == HC_ACTION)
 			{
@@ -77,19 +83,6 @@ namespace window
 			throw std::runtime_error("RegisterRawInputDevices failed");
 	}
 	
-	uintptr_t CL_MouseEvent_addr = 0x0040b0a0;
-	static void CL_MouseEvent(int _dx, int _dy)
-	{
-		_asm
-		{
-			mov ecx, _dx
-			push eax
-			mov eax, _dy
-			call CL_MouseEvent_addr
-			add esp, 4
-		}
-	}
-	
 	static void rawInput_move()
 	{
 		auto delta_x = rawinput_x_current - rawinput_x_old;
@@ -100,51 +93,51 @@ namespace window
 		
 		POINT cursorPos;
 		GetCursorPos(&cursorPos);
-		CL_MouseEvent(delta_x, delta_y);
+		stock::CL_MouseEvent(delta_x, delta_y);
 	}
 	
-	static void IN_MouseMove_stub()
+	static void stub_IN_MouseMove()
 	{
 		// Apply raw input only when player can move
 		if (movement::m_rawinput->integer)
 		{
-			if (*game::cls_keyCatchers == 0) // TODO: Figure out why have to use "== 0" instead of "& KEYCATCH_CGAME"
+			if (*stock::cls_keyCatchers == 0) // TODO: Figure out why have to use "== 0" instead of "& KEYCATCH_CGAME"
 			{
 				rawInput_move();
 				return;
 			}
 
 			// If a .menu is displayed, and cl_bypassMouseInput is enabled, player can move (e.g. wm_quickmessage.menu)
-			if ((*game::cls_keyCatchers & KEYCATCH_UI) && cl_bypassMouseInput->integer)
+			if ((*stock::cls_keyCatchers & stock::KEYCATCH_UI) && cl_bypassMouseInput->integer)
 			{
 				rawInput_move();
 				return;
 			}
 			
-			if (r_fullscreen->integer && *game::cgvm != NULL)
+			if (r_fullscreen->integer && *stock::cgvm != NULL)
 			{
 				// .menu + console opened = player can't move
-				if (*game::cls_keyCatchers == 3)
+				if (*stock::cls_keyCatchers == 3)
 				{
-					IN_MouseMove_hook.invoke();
+					hook_IN_MouseMove.invoke();
 					return;
 				}
 
-				if (*game::cls_keyCatchers & KEYCATCH_CONSOLE)
+				if (*stock::cls_keyCatchers & stock::KEYCATCH_CONSOLE)
 				{
 					rawInput_move();
 					return;
 				}
 			}
 
-			if (*game::cls_keyCatchers & KEYCATCH_MESSAGE)
+			if (*stock::cls_keyCatchers & stock::KEYCATCH_MESSAGE)
 			{
 				rawInput_move();
 				return;
 			}
 		}
 
-		IN_MouseMove_hook.invoke();
+		hook_IN_MouseMove.invoke();
 	}
 	
 	static void WM_INPUT_process(LPARAM lParam)
@@ -153,13 +146,13 @@ namespace window
 		if (imgui::displayed)
 			return;
 		// a .menu is displayed (except if it uses cl_bypassMouseInput)
-		if (*game::cls_keyCatchers & KEYCATCH_UI && !cl_bypassMouseInput->integer)
+		if (*stock::cls_keyCatchers & stock::KEYCATCH_UI && !cl_bypassMouseInput->integer)
 			return;
 		// console is opened and game is windowed
-		if (*game::cls_keyCatchers & KEYCATCH_CONSOLE && !r_fullscreen->integer)
+		if (*stock::cls_keyCatchers & stock::KEYCATCH_CONSOLE && !r_fullscreen->integer)
 			return;
 		// using another window
-		if (GetForegroundWindow() != *game::hWnd)
+		if (GetForegroundWindow() != *stock::hWnd)
 			return;
 		////
 		
@@ -170,7 +163,7 @@ namespace window
 		rawinput_y_current += raw.data.mouse.lLastY;
 	}
 	
-	static LRESULT CALLBACK MainWndProc_stub(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	static LRESULT CALLBACK stub_MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if (imgui::displayed && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
 			return true;
@@ -215,20 +208,20 @@ namespace window
 			console's text field might lose focus because of the Alt press, and the (non visible) system menu woult obtain it
 			Returning here prevents this
 			*/
-			if (*game::cls_keyCatchers & KEYCATCH_CONSOLE)
+			if (*stock::cls_keyCatchers & stock::KEYCATCH_CONSOLE)
 				return 0;
 		}
 		
-		return game::MainWndProc(hWnd, uMsg, wParam, lParam);
+		return stock::MainWndProc(hWnd, uMsg, wParam, lParam);
 	}
 	
-	static void Com_Init_stub(char* commandLine)
+	static void stub_Com_Init(char* commandLine)
 	{
 		hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, NULL, 0);
 		if (!hHook)
 			throw std::runtime_error(utils::string::va("SetWindowsHookEx for LowLevelKeyboardProc failed"));
 		
-		Com_Init_hook.invoke(commandLine);
+		hook_Com_Init.invoke(commandLine);
 	}
 	
 	class component final : public component_interface
@@ -236,14 +229,14 @@ namespace window
 	public:
 		void post_unpack() override
 		{
-			r_fullscreen = game::Cvar_Get("r_fullscreen", "0", CVAR_ARCHIVE | CVAR_LATCH);
-			cl_bypassMouseInput = game::Cvar_Get("cl_bypassMouseInput", "0", 0);
+			r_fullscreen = stock::Cvar_Get("r_fullscreen", "0", stock::CVAR_ARCHIVE | stock::CVAR_LATCH);
+			cl_bypassMouseInput = stock::Cvar_Get("cl_bypassMouseInput", "0", 0);
 
-			utils::hook::set(0x4639b9 + 1, MainWndProc_stub);
+			utils::hook::set(0x4639b9 + 1, stub_MainWndProc);
 			utils::hook::set(0x5083b1, 0x00); // Alt+Tab support, see https://github.com/xtnded/codextended-client/pull/1
 			
-			Com_Init_hook.create(0x004375c0, Com_Init_stub);
-			IN_MouseMove_hook.create(0x00461850, IN_MouseMove_stub);
+			hook_Com_Init.create(0x004375c0, stub_Com_Init);
+			hook_IN_MouseMove.create(0x00461850, stub_IN_MouseMove);
 		}
 	};
 }

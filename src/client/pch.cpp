@@ -1,16 +1,19 @@
-#include <std_include.hpp>
+#include <pch.hpp>
 
+#pragma bss_seg(".payload")
 #pragma comment(linker, "/merge:.text=._text")
 #pragma comment(linker, "/merge:.rdata=._rdata")
 #pragma comment(linker, "/merge:.data=._data")
-
 /*
 Size found using Ghidra
 IMAGE_NT_HEADERS32 -> IMAGE_OPTIONAL_HEADER32 -> SizeOfStackReserve
 */
 #pragma comment(linker, "/stack:0x800000")
 
-#pragma bss_seg(".payload")
+#pragma comment(lib, "dbghelp.lib")
+#pragma comment(lib, "ntdll.lib")
+#pragma comment(lib, "opengl32.lib")
+
 char payload_data[BINARY_PAYLOAD_SIZE];
 
 extern "C"

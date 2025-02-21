@@ -73,8 +73,8 @@ fatalwarnings { "All" }
 project "client"
 kind "WindowedApp"
 targetname "iw1x"
-pchheader "std_include.hpp"
-pchsource "../src/client/std_include.cpp"
+pchheader "pch.hpp"
+pchsource "../src/client/pch.cpp"
 includedirs { "../src/client", "../src/utils" }
 files { "../src/client/**.hpp", "../src/client/**.cpp" }
 links { "utils" }

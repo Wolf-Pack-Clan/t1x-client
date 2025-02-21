@@ -2,5 +2,5 @@
 
 namespace security
 {
-	extern game::cvar_t* cl_allowDownload;
+	extern stock::cvar_t* cl_allowDownload;
 }
