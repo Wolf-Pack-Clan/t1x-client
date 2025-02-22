@@ -78,7 +78,7 @@ pchsource "../src/client/pch.cpp"
 includedirs { "../src/client", "../src/utils" }
 files { "../src/client/**.h", "../src/client/**.cpp", "../src/client/**.rc" }
 links { "utils" }
-linkoptions { "/DYNAMICBASE:NO", "/LAST:._text" }
+linkoptions { "/DYNAMICBASE:NO", "/SAFESEH:NO", "/LAST:._text" }
 submodules.imports()
 
 -- Project: utils
