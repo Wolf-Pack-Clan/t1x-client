@@ -35,10 +35,9 @@ namespace security
 		{
 			auto cvar_name = stock::Cmd_Argv(1);
 #if 0
-			std::ostringstream oss;
-			oss << "####### CG_ServerCommand_stub: " << cvar_name << "\n";
-			std::string str = oss.str();
-			OutputDebugString(str.c_str());
+			std::stringstream ss;
+			ss << "####### CG_ServerCommand_stub: " << cvar_name << std::endl;
+			OutputDebugString(ss.str().c_str());
 #endif
 
 			if (!cvarIsInWhitelist(cvar_name))
@@ -50,10 +49,9 @@ namespace security
 	static void CL_SystemInfoChanged_Cvar_Set_stub(const char* name, const char* value)
 	{
 #if 0
-		std::ostringstream oss;
-		oss << "####### CL_SystemInfoChanged_Cvar_Set_stub: " << name << "\n";
-		std::string str = oss.str();
-		OutputDebugString(str.c_str());
+		std::stringstream ss;
+		ss << "####### CL_SystemInfoChanged_Cvar_Set_stub: " << name << "\n";
+		OutputDebugString(ss.str().c_str());
 #endif
 
 		if (!cvarIsInWhitelist(name))
