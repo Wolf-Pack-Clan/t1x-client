@@ -8,6 +8,7 @@
 #include "imgui.h"
 #include "movement.h"
 #include "scheduler.h"
+#include "security.h"
 
 #include <hidusage.h>
 

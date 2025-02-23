@@ -10,12 +10,10 @@ namespace scheduler
 {
 	enum pipeline
 	{
-		async = 0,	// Asynchronuous pipeline, disconnected from the game
-
-		renderer,
+		client,
 		server,
-		common,
-
+		renderer,
+		async,
 		count
 	};
 

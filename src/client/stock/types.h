@@ -64,18 +64,20 @@ namespace stock
 		// ...
 	} errorParm_t;
 
-
-
-
-
-
-
-
-
-
-
-
-
+	typedef enum
+	{
+		CA_DISCONNECTED = 0,
+		CA_CONNECTING = 1,
+		CA_ACTIVE = 6,
+		// ...
+	} connstate_t;
+	
+	typedef enum
+	{
+		EXEC_NOW,
+		EXEC_INSERT,
+		EXEC_APPEND
+	} cbufExec_t;
 
 
 
@@ -85,15 +87,6 @@ namespace stock
 
 
 
-
-
-	/*typedef enum
-	{
-		CA_DISCONNECTED = 0,
-		CA_CONNECTING = 1,
-		CA_ACTIVE = 6,
-		// ...
-	} connstate_t;*/
 
 	/*typedef struct
 	{

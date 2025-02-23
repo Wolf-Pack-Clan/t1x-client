@@ -1,10 +1,6 @@
 #include "pch.h"
 #if 1
-#include "shared.h"
-
-#include "hook.h"
-
-#include "loader/component_loader.h"
+#include "security.h"
 
 namespace security
 {
@@ -74,6 +70,16 @@ namespace security
 			stock::Com_Error(stock::ERR_DROP, "Non-pk3 download protection triggered");
 
 		CL_SystemInfoChanged_hook.invoke();
+	}
+
+	bool escape_aborted_connection()
+	{
+		if (*stock::cls_state > stock::CA_DISCONNECTED && *stock::cls_state < stock::CA_ACTIVE)
+		{
+			stock::Cbuf_ExecuteText(stock::EXEC_APPEND, "disconnect\n");
+			return true;
+		}
+		return false;
 	}
 	
 	class component final : public component_interface

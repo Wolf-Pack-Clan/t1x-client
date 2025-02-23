@@ -31,7 +31,7 @@ namespace window
 				auto altDown = (pKey->flags & LLKHF_ALTDOWN);
 				auto escDown_sys = (pKey->vkCode == VK_ESCAPE && wParam == WM_SYSKEYDOWN);
 				auto escUp_sys = (pKey->vkCode == VK_ESCAPE && wParam == WM_SYSKEYUP);
-
+				
 				if (altDown)
 				{
 					if (escDown_sys)
@@ -169,6 +169,10 @@ namespace window
 				imgui::toggle_menu_flag(); // Allow closing imgui by pressing only Esc
 			break;
 		case WM_KEYDOWN:
+			if (wParam == VK_ESCAPE)
+				if (security::escape_aborted_connection())
+					return 0;
+			
 			if (imgui::displayed)
 				return 0; // Prevent moving
 			break;

@@ -20,14 +20,14 @@ namespace stock
 	WEAK adjuster<void(int code, const char* fmt, ...)> Com_Error{ 0x00435ad0 };
 	WEAK adjuster<void()> IN_MouseMove{ 0x00461850 };
 	WEAK adjuster<void(int mstate)> IN_MouseEvent{ 0x004617d0 };
+	WEAK adjuster<void(cbufExec_t exec_when, const char* text)> Cbuf_ExecuteText{ 0x00428290 };
 
 
 
-	
-	
 
 
-	//WEAK symbol<void()> CL_Disconnect_f{ 0, 0x0040f5f0 };
+
+	//WEAK adjuster<void()> CL_Disconnect_f{ 0x0040f5f0 };
 	//WEAK symbol<void(float x, float y, const char* s, float alpha)> CG_DrawBigString{ 0, 0x30019710, BASE_CGAME_MP };
 	//WEAK symbol<int(vm_t* vm, int callnum, ...)> VM_Call{ 0, 0x00460480 };
 }

@@ -30,10 +30,7 @@ namespace stock
 	WEAK adjuster<vm_t*> cgvm{ 0x01617348 };
 	WEAK adjuster<qboolean> mouseActive{ 0x8e2520 };
 	WEAK adjuster<qboolean> mouseInitialized{ 0x8e2524 };
-
-	
-
-	
+	WEAK adjuster<connstate_t> cls_state{ 0x155F2C0 };
 
 
 
@@ -41,7 +38,6 @@ namespace stock
 
 
 	//WEAK adjuster<int> ping{ 0x41405d };
-	//WEAK symbol<connstate_t> cls_state{ 0, 0x155F2C0 };
 	//WEAK symbol<vm_t*> uivm{ 0, 0x0161747c };
 }
 

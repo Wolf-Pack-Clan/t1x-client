@@ -77,7 +77,7 @@ namespace scheduler
 	std::thread thread;
 	task_pipeline pipelines[pipeline::count];
 		
-	utils::hook::detour hook_Com_Frame;
+	utils::hook::detour hook_CL_Frame;
 	utils::hook::detour hook_SV_Frame;
 	utils::hook::detour hook_RE_EndFrame;
 		
@@ -97,10 +97,10 @@ namespace scheduler
 		execute(pipeline::server);
 		hook_SV_Frame.invoke(msec);
 	}
-	static void stub_Com_Frame()
+	static void stub_CL_Frame(int msec)
 	{
-		execute(pipeline::common);
-		hook_Com_Frame.invoke();
+		execute(pipeline::client);
+		hook_CL_Frame.invoke(msec);
 	}
 	
 	void schedule(const std::function<bool()>& callback, const pipeline type, const std::chrono::milliseconds delay)
@@ -150,7 +150,7 @@ namespace scheduler
 
 		void post_unpack() override
 		{
-			hook_Com_Frame.create(0x00437f40, stub_Com_Frame);
+			hook_CL_Frame.create(0x00411280, stub_CL_Frame);
 			hook_SV_Frame.create(0x0045b1d0, stub_SV_Frame);
 			hook_RE_EndFrame.create(0x004de4b0, stub_RE_EndFrame);
 		}
