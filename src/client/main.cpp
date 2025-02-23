@@ -11,6 +11,7 @@ bool clientNamedMohaa = false;
 DWORD address_cgame_mp;
 DWORD address_ui_mp;
 utils::hook::detour hook_GetModuleFileNameW;
+utils::hook::detour hook_GetModuleFileNameA;
 
 static std::string get_client_filename()
 {
@@ -91,7 +92,6 @@ static HMODULE WINAPI stub_LoadLibraryA(LPCSTR lpLibFileName)
             component_loader::post_ui_mp();
         }
     }
-
     return ret;
 }
 
@@ -103,7 +103,9 @@ so if it has a profile for it, it will get enabled
 // For AMD and Intel HD Graphics
 static DWORD WINAPI stub_GetModuleFileNameA(HMODULE hModule, LPSTR lpFilename, DWORD nSize)
 {
-    auto ret = GetModuleFileNameA(hModule, lpFilename, nSize);
+    auto* orig = static_cast<decltype(GetModuleFileNameA)*>(hook_GetModuleFileNameA.get_original());
+    auto ret = orig(hModule, lpFilename, nSize);
+    
     if (!strcmp(PathFindFileNameA(lpFilename), "iw1x.exe"))
     {
         std::filesystem::path path = lpFilename;
@@ -136,7 +138,6 @@ static DWORD WINAPI stub_GetModuleFileNameW(HMODULE hModule, LPWSTR lpFilename, 
         required_size = MultiByteToWideChar(CP_UTF8, 0, pathStr.c_str(), -1, nullptr, 0);
         MultiByteToWideChar(CP_UTF8, 0, pathStr.c_str(), -1, lpFilename, required_size);
     }
-
     return ret;
 }
 
@@ -155,14 +156,13 @@ static FARPROC load_binary()
                 return stub_GetProcAddress;
             if (function == "LoadLibraryA")
                 return stub_LoadLibraryA;
-            if (function == "GetModuleFileNameA")
-                return stub_GetModuleFileNameA;
 
             return component_loader::load_import(library, function);
         });
 
     const utils::nt::library kernel32("kernel32.dll");
     hook_GetModuleFileNameW.create(kernel32.get_proc<DWORD(WINAPI*)(HMODULE, LPWSTR, DWORD)>("GetModuleFileNameW"), stub_GetModuleFileNameW);
+    hook_GetModuleFileNameA.create(kernel32.get_proc<DWORD(WINAPI*)(HMODULE, LPSTR, DWORD)>("GetModuleFileNameA"), stub_GetModuleFileNameA);
     
     // Check if the CoD file is named mohaa
     std::filesystem::path currentPath_mohaa_test = std::filesystem::current_path() / "mohaa.exe";
