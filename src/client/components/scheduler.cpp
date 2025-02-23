@@ -77,9 +77,9 @@ namespace scheduler
 	std::thread thread;
 	task_pipeline pipelines[pipeline::count];
 		
-	utils::hook::detour Com_Frame_hook;
-	utils::hook::detour SV_Frame_hook;
-	utils::hook::detour RE_EndFrame_hook;
+	utils::hook::detour hook_Com_Frame;
+	utils::hook::detour hook_SV_Frame;
+	utils::hook::detour hook_RE_EndFrame;
 		
 	static void execute(const pipeline type)
 	{
@@ -87,20 +87,20 @@ namespace scheduler
 		pipelines[type].execute();
 	}
 		
-	static void RE_EndFrame_stub(int* frontEndMsec, int* backEndMsec)
+	static void stub_RE_EndFrame(int* frontEndMsec, int* backEndMsec)
 	{
 		execute(pipeline::renderer);
-		RE_EndFrame_hook.invoke(frontEndMsec, backEndMsec);
+		hook_RE_EndFrame.invoke(frontEndMsec, backEndMsec);
 	}
-	static void SV_Frame_stub(int msec)
+	static void stub_SV_Frame(int msec)
 	{
 		execute(pipeline::server);
-		SV_Frame_hook.invoke(msec);
+		hook_SV_Frame.invoke(msec);
 	}
-	static void Com_Frame_stub()
+	static void stub_Com_Frame()
 	{
 		execute(pipeline::common);
-		Com_Frame_hook.invoke();
+		hook_Com_Frame.invoke();
 	}
 	
 	void schedule(const std::function<bool()>& callback, const pipeline type, const std::chrono::milliseconds delay)
@@ -150,9 +150,9 @@ namespace scheduler
 
 		void post_unpack() override
 		{
-			Com_Frame_hook.create(reinterpret_cast<void(*)>(0x00437f40), Com_Frame_stub);
-			SV_Frame_hook.create(reinterpret_cast<void(*)(int)>(0x0045b1d0), SV_Frame_stub);
-			RE_EndFrame_hook.create(reinterpret_cast<void(*)(int*, int*)>(0x004de4b0), RE_EndFrame_stub);
+			hook_Com_Frame.create(0x00437f40, stub_Com_Frame);
+			hook_SV_Frame.create(0x0045b1d0, stub_SV_Frame);
+			hook_RE_EndFrame.create(0x004de4b0, stub_RE_EndFrame);
 		}
 		
 		void pre_destroy() override

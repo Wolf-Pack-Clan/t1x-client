@@ -1,11 +1,9 @@
 #include "pch.h"
 #if 1
-#include "shared.h"
 #include "view.h"
 
 namespace view
 {
-	stock::cvar_t* cg_fov;
 	stock::cvar_t* cg_fovScaleEnable;
 	stock::cvar_t* cg_fovScale;
 	
@@ -45,7 +43,6 @@ namespace view
 	public:
 		void post_unpack() override
 		{
-			cg_fov = stock::Cvar_Get("cg_fov", "80", stock::CVAR_ARCHIVE);
 			cg_fovScaleEnable = stock::Cvar_Get("cg_fovScaleEnable", "0", stock::CVAR_ARCHIVE);
 			cg_fovScale = stock::Cvar_Get("cg_fovScale", "1", stock::CVAR_ARCHIVE);
 		}

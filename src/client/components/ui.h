@@ -1,6 +1,10 @@
+#include "shared.h"
+
 #include "hook.h"
-#include "scheduler.h"
+
 #include "loader/component_loader.h"
+
+#include "scheduler.h"
 
 namespace ui
 {

@@ -4,6 +4,7 @@ namespace stock
 	typedef enum { qfalse, qtrue } qboolean;
 	typedef void (*xcommand_t)(void);
 	typedef struct vm_s vm_t;
+	typedef int cvarHandle_t;
 	
 	typedef struct cvar_s
 	{
@@ -18,6 +19,23 @@ namespace stock
 		int integer;
 		// ...
 	} cvar_t;
+
+	typedef struct
+	{
+		cvarHandle_t handle;
+		int modificationCount;
+		float value;
+		int integer;
+		// ...
+	} vmCvar_t;
+
+	typedef struct
+	{
+		vmCvar_t* vmCvar;
+		char* cvarName;
+		char* defaultString;
+		int cvarFlags;
+	} cvarTable_t;
 	
 	typedef struct playerState_s
 	{
@@ -49,6 +67,21 @@ namespace stock
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
 
 
 

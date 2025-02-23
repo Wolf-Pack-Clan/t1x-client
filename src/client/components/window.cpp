@@ -1,6 +1,5 @@
 #include "pch.h"
 #if 1
-#include "shared.h"
 #include "window.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -13,8 +12,6 @@ namespace window
 	int rawinput_y_old = 0;
 	HHOOK hHook;
 
-	stock::cvar_t* r_fullscreen;
-	stock::cvar_t* cl_bypassMouseInput;
 	utils::hook::detour hook_Com_Init;
 	utils::hook::detour hook_IN_MouseMove;
 
@@ -98,13 +95,13 @@ namespace window
 			}
 
 			// If a .menu is displayed, and cl_bypassMouseInput is enabled, player can move (e.g. wm_quickmessage.menu)
-			if ((*stock::cls_keyCatchers & stock::KEYCATCH_UI) && cl_bypassMouseInput->integer)
+			if ((*stock::cls_keyCatchers & stock::KEYCATCH_UI) && cvars::cl_bypassMouseInput->integer)
 			{
 				rawInput_move();
 				return;
 			}
 			
-			if (r_fullscreen->integer && *stock::cgvm != NULL)
+			if (cvars::r_fullscreen->integer && *stock::cgvm != NULL)
 			{
 				// .menu + console opened = player can't move
 				if (*stock::cls_keyCatchers == 3)
@@ -136,10 +133,10 @@ namespace window
 		if (imgui::displayed)
 			return;
 		// a .menu is displayed (except if it uses cl_bypassMouseInput)
-		if (*stock::cls_keyCatchers & stock::KEYCATCH_UI && !cl_bypassMouseInput->integer)
+		if (*stock::cls_keyCatchers & stock::KEYCATCH_UI && !cvars::cl_bypassMouseInput->integer)
 			return;
 		// console is opened and game is windowed
-		if (*stock::cls_keyCatchers & stock::KEYCATCH_CONSOLE && !r_fullscreen->integer)
+		if (*stock::cls_keyCatchers & stock::KEYCATCH_CONSOLE && !cvars::r_fullscreen->integer)
 			return;
 		// using another window
 		if (GetForegroundWindow() != *stock::hWnd)
@@ -219,9 +216,6 @@ namespace window
 	public:
 		void post_unpack() override
 		{
-			r_fullscreen = stock::Cvar_Get("r_fullscreen", "0", stock::CVAR_ARCHIVE | stock::CVAR_LATCH);
-			cl_bypassMouseInput = stock::Cvar_Get("cl_bypassMouseInput", "0", 0);
-
 			utils::hook::set(0x4639b9 + 1, stub_MainWndProc);
 			utils::hook::set(0x5083b1, 0x00); // Alt+Tab support, see https://github.com/xtnded/codextended-client/pull/1
 			

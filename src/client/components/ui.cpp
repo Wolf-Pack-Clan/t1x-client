@@ -1,6 +1,5 @@
 #include "pch.h"
 #if 1
-#include "shared.h"
 #include "ui.h"
 
 namespace ui
@@ -8,10 +7,6 @@ namespace ui
 	stock::cvar_t* branding;
 	stock::cvar_t* cg_drawDisconnect;
 	stock::cvar_t* cg_drawWeaponSelect;
-	stock::cvar_t* cg_drawFPS;
-	stock::cvar_t* cg_lagometer;
-	stock::cvar_t* cg_chatHeight;
-	stock::cvar_t* con_boldgamemessagetime;
 
 	utils::hook::detour CG_DrawWeaponSelect_hook;
 		
@@ -52,12 +47,8 @@ namespace ui
 		void post_unpack() override
 		{
 			branding = stock::Cvar_Get("branding", "1", stock::CVAR_ARCHIVE);
-			cg_drawFPS = stock::Cvar_Get("cg_drawFPS", "0", stock::CVAR_ARCHIVE);
 			cg_drawWeaponSelect = stock::Cvar_Get("cg_drawWeaponSelect", "1", stock::CVAR_ARCHIVE);
 			cg_drawDisconnect = stock::Cvar_Get("cg_drawDisconnect", "1", stock::CVAR_ARCHIVE);
-			cg_chatHeight = stock::Cvar_Get("cg_chatHeight", "8", stock::CVAR_ARCHIVE);
-			con_boldgamemessagetime = stock::Cvar_Get("con_boldgamemessagetime", "8", stock::CVAR_ARCHIVE);
-			cg_lagometer = stock::Cvar_Get("cg_lagometer", "0", stock::CVAR_ARCHIVE);
 
 			scheduler::loop(draw_branding, scheduler::pipeline::renderer);
 		}

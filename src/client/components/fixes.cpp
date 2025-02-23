@@ -1,35 +1,37 @@
 #include "pch.h"
 #if 1
 #include "shared.h"
+
 #include "hook.h"
+
 #include "loader/component_loader.h"
 
 namespace fixes
 {
 	utils::hook::detour UI_StartServerRefresh_hook;
-	
+
 	uintptr_t pfield_charevent_return = 0x40CB77;
 	uintptr_t pfield_charevent_continue = 0x40CB23;
 	static __declspec(naked) void Field_CharEvent_ignore_console_char_stub()
 	{
 		// See https://github.com/xtnded/codextended-client/blob/45af251518a390ab08b1c8713a6a1544b70114a1/cl_input.cpp#L77
-		
+
 		__asm
 		{
 			cmp ebx, 20h;
 			jge check;
 			jmp pfield_charevent_return;
-		
+
 		check:
 			cmp ebx, 126;
 			jl checked;
 			jmp pfield_charevent_return;
-		
+
 		checked:
 			jmp pfield_charevent_continue;
 		}
 	}
-	
+
 	static void UI_StartServerRefresh_stub(stock::qboolean full)
 	{
 		if (*stock::refreshActive)
@@ -69,7 +71,7 @@ namespace fixes
 #pragma warning(pop)
 		return dest;
 	}
-	
+
 	class component final : public component_interface
 	{
 	public:
@@ -88,7 +90,7 @@ namespace fixes
 			*/
 			utils::hook::nop(0x0042d122, 5);
 		}
-		
+
 		void post_ui_mp() override
 		{
 			// Prevent displaying servers twice (occurs if double click Refresh List)

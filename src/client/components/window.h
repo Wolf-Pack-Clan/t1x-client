@@ -1,3 +1,5 @@
+#include "shared.h"
+
 #include "hook.h"
 #include "_string.h"
 

@@ -1,6 +1,5 @@
 #include "pch.h"
 #if 1
-#include "shared.h"
 #include "movement.h"
 
 namespace movement
@@ -16,17 +15,17 @@ namespace movement
 		stock::viewangles[stock::YAW] += 180;
 	}
 	
-	static float originalCgZoomSensitivity()
+	static float originalCgZoomSensitivity() // See 30032fe8
 	{
-		return *stock::fov_visible / *stock::cg_fov_value; // See 30032fe8
+		return *stock::fov_visible / cvars::vm::cg_fov->value; // See 30032fe8
 	}
 	
 	static float scaledCgZoomSensitivity()
 	{
+		bool weaponIsSniper = false;
+
 		if (!*stock::pm)
 			return originalCgZoomSensitivity();
-
-		bool weaponIsSniper = false;
 		
 		int weapon = (*stock::pm)->ps->weapon;
 		stock::weaponInfo_t* weaponInfo = stock::BG_GetInfoForWeapon(weapon);

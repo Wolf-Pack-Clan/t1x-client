@@ -1,7 +1,10 @@
 #include "pch.h"
 #if 1
 #include "shared.h"
-#include "security.h"
+
+#include "hook.h"
+
+#include "loader/component_loader.h"
 
 namespace security
 {
@@ -83,8 +86,6 @@ namespace security
 			
 			// Check in sv_pakNames and sv_referencedPakNames for an indicator of a non-pk3 file incoming download
 			CL_SystemInfoChanged_hook.create(0x00415eb0, CL_SystemInfoChanged_stub);
-
-			cl_allowDownload = stock::Cvar_Get("cl_allowDownload", "0", stock::CVAR_ARCHIVE);
 		}
 
 		void post_cgame() override

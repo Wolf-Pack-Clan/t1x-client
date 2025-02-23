@@ -1,6 +1,5 @@
 #include "pch.h"
 #if 1
-#include "shared.h"
 #include "imgui.h"
 
 namespace imgui
@@ -89,15 +88,19 @@ namespace imgui
 		sensitivity_adsScaleSniper = movement::sensitivity_adsScaleSniper->value;
 		cg_drawDisconnect = ui::cg_drawDisconnect->integer;
 		cg_drawWeaponSelect = ui::cg_drawWeaponSelect->integer;
-		cg_drawFPS = ui::cg_drawFPS->integer;
-		cg_chatHeight = ui::cg_chatHeight->integer;
-		con_boldgamemessagetime = ui::con_boldgamemessagetime->integer;
-		cg_lagometer = ui::cg_lagometer->integer;
-		cl_allowDownload = !security::cl_allowDownload->integer;
+		con_boldgamemessagetime = cvars::con_boldgamemessagetime->integer;
+		cl_allowDownload = !cvars::cl_allowDownload->integer;
 		m_rawinput = movement::m_rawinput->integer;
-		cg_fov = view::cg_fov->value;
 		cg_fovScaleEnable = view::cg_fovScaleEnable->integer;
 		cg_fovScale = view::cg_fovScale->value;
+
+		if (*stock::cgvm != NULL)
+		{
+			cg_lagometer = cvars::vm::cg_lagometer->integer;
+			cg_drawFPS = cvars::vm::cg_drawFPS->integer;
+			cg_chatHeight = cvars::vm::cg_chatHeight->integer;
+			cg_fov = cvars::vm::cg_fov->value;
+		}
 	}
 
 	void draw_menu()
@@ -110,7 +113,6 @@ namespace imgui
 		ImGui::Begin(MOD_NAME, NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
 		//// Security
-
 		ImGui::SeparatorText("Security");
 		ImGui::Checkbox("Deny downloads", &cl_allowDownload);
 		////
@@ -118,18 +120,31 @@ namespace imgui
 		ImGui::Dummy(ImVec2(0, 10)); // Spacing
 
 		//// UI
-
 		ImGui::SeparatorText("UI");
+		if (*stock::cgvm == NULL)
+			ImGui::BeginDisabled();
 		ImGui::Checkbox("FPS", &cg_drawFPS);
+		if (*stock::cgvm == NULL)
+			ImGui::EndDisabled();
+
+		if (*stock::cgvm == NULL || cvars::com_sv_running->integer)
+			ImGui::BeginDisabled();
 		ImGui::Checkbox("Lagometer", &cg_lagometer);
+		if (*stock::cgvm == NULL || cvars::com_sv_running->integer)
+			ImGui::EndDisabled();
+
 		ImGui::Checkbox("\"Connection Interrupted\"", &cg_drawDisconnect);
 		ImGui::Checkbox("Weapon selection", &cg_drawWeaponSelect);
 
 		ImGui::Spacing();
 
+		if (*stock::cgvm == NULL)
+			ImGui::BeginDisabled();
 		ImGui::Text("Chat lines");
 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 		ImGui::SliderInt("##slider_cg_chatHeight", &cg_chatHeight, 0, 8, "%i", ImGuiSliderFlags_NoInput);
+		if (*stock::cgvm == NULL)
+			ImGui::EndDisabled();
 
 		ImGui::Spacing();
 
@@ -139,11 +154,15 @@ namespace imgui
 		////
 
 		//// View
-
 		ImGui::SeparatorText("View");
+
+		if (*stock::cgvm == NULL)
+			ImGui::BeginDisabled();
 		ImGui::Text("FOV");
 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 		ImGui::SliderFloat("##slider_cg_fov", &cg_fov, 80.f, 95.f, "%.2f", ImGuiSliderFlags_NoInput);
+		if (*stock::cgvm == NULL)
+			ImGui::EndDisabled();
 		
 		ImGui::Spacing();
 		
@@ -159,7 +178,6 @@ namespace imgui
 		ImGui::Dummy(ImVec2(0, 10)); // Spacing
 
 		//// Movement
-
 		ImGui::SeparatorText("Movement");
 		ImGui::Checkbox("Raw mouse input", &m_rawinput);
 
@@ -198,15 +216,19 @@ namespace imgui
 		stock::Cvar_Set(movement::sensitivity_adsScaleSniper->name, utils::string::va("%.2f", sensitivity_adsScaleSniper));
 		stock::Cvar_Set(ui::cg_drawDisconnect->name, cg_drawDisconnect ? "1" : "0");
 		stock::Cvar_Set(ui::cg_drawWeaponSelect->name, cg_drawWeaponSelect ? "1" : "0");
-		stock::Cvar_Set(ui::cg_drawFPS->name, cg_drawFPS ? "1" : "0");
-		stock::Cvar_Set(ui::cg_chatHeight->name, utils::string::va("%i", cg_chatHeight));
-		stock::Cvar_Set(ui::con_boldgamemessagetime->name, utils::string::va("%i", con_boldgamemessagetime));
-		stock::Cvar_Set(ui::cg_lagometer->name, cg_lagometer ? "1" : "0");
-		stock::Cvar_Set(security::cl_allowDownload->name, cl_allowDownload ? "0" : "1");
+		stock::Cvar_Set(cvars::con_boldgamemessagetime->name, utils::string::va("%i", con_boldgamemessagetime));
+		stock::Cvar_Set(cvars::cl_allowDownload->name, cl_allowDownload ? "0" : "1");
 		stock::Cvar_Set(movement::m_rawinput->name, m_rawinput ? "1" : "0");
-		stock::Cvar_Set(view::cg_fov->name, utils::string::va("%.2f", cg_fov));
 		stock::Cvar_Set(view::cg_fovScaleEnable->name, cg_fovScaleEnable ? "1" : "0");
 		stock::Cvar_Set(view::cg_fovScale->name, utils::string::va("%.2f", cg_fovScale));
+		
+		if (*stock::cgvm != NULL)
+		{
+			cvars::vm::cg_fov->value = cg_fov;
+			cvars::vm::cg_drawFPS->integer = cg_drawFPS;
+			cvars::vm::cg_lagometer->integer = cg_lagometer;
+			cvars::vm::cg_chatHeight->integer = cg_chatHeight;
+		}
 	}
 
 	void end_frame()
@@ -216,7 +238,7 @@ namespace imgui
 		ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 	}
 	
-	void shutdown()
+	static void shutdown()
 	{
 		if (initialized)
 		{
@@ -227,7 +249,7 @@ namespace imgui
 		}
 	}
 	
-	BOOL WINAPI SwapBuffers_stub(HDC hdc)
+	static BOOL WINAPI SwapBuffers_stub(HDC hdc)
 	{
 		if (!initialized)
 		{
