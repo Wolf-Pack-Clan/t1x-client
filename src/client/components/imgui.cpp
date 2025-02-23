@@ -289,6 +289,11 @@ namespace imgui
 			}
 			return nullptr;
 		}
+
+		void post_unpack() override
+		{
+			stock::Cmd_AddCommand("imgui", toggle_menu_flag);
+		}
 		
 		void pre_destroy() override
 		{
