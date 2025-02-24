@@ -11,13 +11,14 @@ namespace test
 	static void Command_test()
 	{
 #if 0
-		
-		
-		auto test = *(int*)(*(int*)ABSOLUTE_CGAME_MP(0x301E2160) + 0x18);
-		std::stringstream ss;
-		ss << "####### check: " << std::hex <<test << std::endl;
-		OutputDebugString(ss.str().c_str());
 
+		std::stringstream ss;
+		int i;
+		for (i = 0; i < 0xad; i++)
+		{
+			ss << "####### cvarName: " << stock::cgame_mp::cvarTable[i].cvarName << ", i = " << i << std::endl;
+		}
+		OutputDebugString(ss.str().c_str());
 
 
 #endif
@@ -29,6 +30,7 @@ namespace test
 	{
 		OutputDebugString("stub_Test\n");
 		hook_Test.invoke();
+
 	}
 #endif
 	
@@ -38,6 +40,8 @@ namespace test
 		void post_unpack() override
 		{
 			stock::Cmd_AddCommand("test", Command_test);
+
+			//hook_Test.create(0x0040eb40, stub_Test);
 		}
 		
 		void post_cgame() override

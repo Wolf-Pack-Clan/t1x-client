@@ -9,6 +9,7 @@ namespace view
 	stock::cvar_t* record_respawn;
 
 	utils::hook::detour hook_CG_Respawn;
+	utils::hook::detour hook_CL_PlayDemo_f;
 	
 	static float scaledFOV(float fov)
 	{
@@ -58,6 +59,12 @@ namespace view
 		}
 	}
 
+	static void stub_CL_PlayDemo_f()
+	{
+		hook_CL_PlayDemo_f.invoke();
+		stock::Cvar_Set("sv_cheats", "1");
+	}
+
 	static void death_stoprecord()
 	{
 		if (record_respawn->integer)
@@ -80,6 +87,8 @@ namespace view
 			cg_fovScaleEnable = stock::Cvar_Get("cg_fovScaleEnable", "0", stock::CVAR_ARCHIVE);
 			cg_fovScale = stock::Cvar_Get("cg_fovScale", "1", stock::CVAR_ARCHIVE);
 			record_respawn = stock::Cvar_Get("record_respawn", "0", stock::CVAR_ARCHIVE);
+
+			hook_CL_PlayDemo_f.create(0x0040eb40, stub_CL_PlayDemo_f);
 		}
 
 		void post_cgame() override

@@ -8,11 +8,12 @@
 
 namespace fixes
 {
-	utils::hook::detour UI_StartServerRefresh_hook;
+	utils::hook::detour hook_UI_StartServerRefresh;
+	utils::hook::detour hook_CL_Disconnect_f;
 
 	uintptr_t pfield_charevent_return = 0x40CB77;
 	uintptr_t pfield_charevent_continue = 0x40CB23;
-	static __declspec(naked) void Field_CharEvent_ignore_console_char_stub()
+	static __declspec(naked) void stub_Field_CharEvent_ignore_console_char()
 	{
 		// See https://github.com/xtnded/codextended-client/blob/45af251518a390ab08b1c8713a6a1544b70114a1/cl_input.cpp#L77
 
@@ -32,11 +33,11 @@ namespace fixes
 		}
 	}
 
-	static void UI_StartServerRefresh_stub(stock::qboolean full)
+	static void stub_UI_StartServerRefresh(stock::qboolean full)
 	{
 		if (*stock::refreshActive)
 			return;
-		UI_StartServerRefresh_hook.invoke(full);
+		hook_UI_StartServerRefresh.invoke(full);
 	}
 
 	static char* Q_CleanStr_keep_colors(char* string)
@@ -60,7 +61,7 @@ namespace fixes
 		*d = '\0';
 		return string;
 	}
-	static char* CL_SetServerInfo_hostname_strncpy_stub(char* dest, const char* src, int destsize)
+	static char* stub_CL_SetServerInfo_hostname_strncpy(char* dest, const char* src, int destsize)
 	{
 		char hostname[stock::MAX_STRING_CHARS];
 		strncpy_s(hostname, sizeof(hostname), src, _TRUNCATE);
@@ -71,17 +72,23 @@ namespace fixes
 #pragma warning(pop)
 		return dest;
 	}
-
+	
+	static void stub_CL_Disconnect_f()
+	{
+		stock::Cvar_Set("timescale", "1");
+		hook_CL_Disconnect_f.invoke();
+	}
+	
 	class component final : public component_interface
 	{
 	public:
 		void post_unpack() override
 		{
 			// Prevent inserting the char of the console key in the text field (e.g. Superscript Two gets inserted using french keyboard)
-			utils::hook::jump(0x40CB1E, Field_CharEvent_ignore_console_char_stub);
+			utils::hook::jump(0x40CB1E, stub_Field_CharEvent_ignore_console_char);
 
 			// Prevent displaying squares in server name (occurs when hostname contains e.g. SOH chars)
-			utils::hook::call(0x412A2C, CL_SetServerInfo_hostname_strncpy_stub);
+			utils::hook::call(0x412A2C, stub_CL_SetServerInfo_hostname_strncpy);
 
 			/*
 			Prevent the CD Key error when joining a server (occurs when joined a fs_game server previously)
@@ -89,12 +96,15 @@ namespace fixes
 			See https://github.com/xtnded/codextended-client/blob/45af251518a390ab08b1c8713a6a1544b70114a1/fixes.cpp#L21
 			*/
 			utils::hook::nop(0x0042d122, 5);
+			
+			// Prevent timescale remaining modified after leaving server/demo
+			hook_CL_Disconnect_f.create(0x0040f5f0, stub_CL_Disconnect_f);
 		}
 
 		void post_ui_mp() override
 		{
 			// Prevent displaying servers twice (occurs if double click Refresh List)
-			UI_StartServerRefresh_hook.create(ABSOLUTE_UI_MP(0x4000ea90), UI_StartServerRefresh_stub);
+			hook_UI_StartServerRefresh.create(ABSOLUTE_UI_MP(0x4000ea90), stub_UI_StartServerRefresh);
 		}
 	};
 }
