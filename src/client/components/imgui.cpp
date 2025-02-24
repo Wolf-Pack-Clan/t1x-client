@@ -264,10 +264,21 @@ namespace imgui
 		
 		if (*stock::cgvm != NULL)
 		{
-			cvars::vm::cg_fov->value = cg_fov;
-			cvars::vm::cg_drawFPS->integer = cg_drawFPS;
-			cvars::vm::cg_lagometer->integer = cg_lagometer;
-			cvars::vm::cg_chatHeight->integer = cg_chatHeight;
+			stock::cvar_t* cv = NULL;
+			/*
+			TODO: Clean, see Cvar_Update
+			*/
+			cv = reinterpret_cast<stock::cvar_t*>(reinterpret_cast<uintptr_t>(*stock::cvar_indexes) + (0x2c * cvars::vm::cg_fov->handle));
+			stock::Cvar_Set(cv->name, utils::string::va("%.2f", cg_fov));
+
+			cv = reinterpret_cast<stock::cvar_t*>(reinterpret_cast<uintptr_t>(*stock::cvar_indexes) + (0x2c * cvars::vm::cg_drawFPS->handle));
+			stock::Cvar_Set(cv->name, utils::string::va("%i", cg_drawFPS));
+
+			cv = reinterpret_cast<stock::cvar_t*>(reinterpret_cast<uintptr_t>(*stock::cvar_indexes) + (0x2c * cvars::vm::cg_lagometer->handle));
+			stock::Cvar_Set(cv->name, utils::string::va("%i", cg_lagometer));
+
+			cv = reinterpret_cast<stock::cvar_t*>(reinterpret_cast<uintptr_t>(*stock::cvar_indexes) + (0x2c * cvars::vm::cg_chatHeight->handle));
+			stock::Cvar_Set(cv->name, utils::string::va("%i", cg_chatHeight));
 		}
 	}
 
