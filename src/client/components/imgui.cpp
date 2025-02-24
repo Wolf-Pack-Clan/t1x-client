@@ -149,7 +149,7 @@ namespace imgui
 	{
 		BEGINTABITEM_SPACE("Security")
 
-		ImGui::Checkbox("Block downloads", &cl_allowDownload);
+		ImGui::Checkbox("Prevent downloading", &cl_allowDownload);
 
 		ENDTABITEM_SPACED()
 	}
@@ -159,14 +159,14 @@ namespace imgui
 		BEGINTABITEM_SPACE("UI")
 
 		if (*stock::cgvm == NULL) ImGui::BeginDisabled();
-		ImGui::Checkbox("FPS", &cg_drawFPS);
+		ImGui::Checkbox("FPS counter", &cg_drawFPS);
 		if (*stock::cgvm == NULL) ImGui::EndDisabled();
 
 		if (*stock::cgvm == NULL || cvars::com_sv_running->integer) ImGui::BeginDisabled();
 		ImGui::Checkbox("Lagometer", &cg_lagometer);
 		if (*stock::cgvm == NULL || cvars::com_sv_running->integer) ImGui::EndDisabled();
 
-		ImGui::Checkbox("\"Connection Interrupted\"", &cg_drawDisconnect);
+		ImGui::Checkbox("Connection interrupted indicator", &cg_drawDisconnect);
 		ImGui::Checkbox("Weapon selection", &cg_drawWeaponSelect);
 
 		ImGui::Spacing();
@@ -211,7 +211,7 @@ namespace imgui
 		ImGui::Spacing();
 			
 		if (*stock::cgvm == NULL || !cvars::sv_cheats->integer) ImGui::BeginDisabled();
-		ImGui::Text("Timescale");
+		ImGui::Text("Time scale");
 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 		ImGui::SliderFloat("##slider_com_timescale", &com_timescale, 0.1f, 5, "%.1f", ImGuiSliderFlags_NoInput);
 		if (*stock::cgvm == NULL || !cvars::sv_cheats->integer) ImGui::EndDisabled();
@@ -227,8 +227,8 @@ namespace imgui
 
 		ImGui::Spacing();
 
-		// Sensitivity multiplier
-		ImGui::Checkbox("Sensitivity multiplier", &sensitivity_adsScaleEnable);
+		// ADS sensitivity scale
+		ImGui::Checkbox("ADS sensitivity scale", &sensitivity_adsScaleEnable);
 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 		if (!sensitivity_adsScaleEnable) ImGui::BeginDisabled();
 		ImGui::SliderFloat("##slider_sensitivity_adsScale", &sensitivity_adsScale, 0.15f, 1.f, "%.2f", ImGuiSliderFlags_NoInput);
@@ -236,8 +236,8 @@ namespace imgui
 
 		ImGui::Spacing();
 
-		// Sensitivity sniper multiplier
-		ImGui::Checkbox("Sensitivity sniper multiplier", &sensitivity_adsScaleSniperEnable);
+		// ADS sensitivity scale sniper
+		ImGui::Checkbox("ADS sensitivity scale [sniper]", &sensitivity_adsScaleSniperEnable);
 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 		if (!sensitivity_adsScaleSniperEnable) ImGui::BeginDisabled();
 		ImGui::SliderFloat("##slider_sensitivity_adsScaleSniper", &sensitivity_adsScaleSniper, 0.15f, 1.f, "%.2f", ImGuiSliderFlags_NoInput);
