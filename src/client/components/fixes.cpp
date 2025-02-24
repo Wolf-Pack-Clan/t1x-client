@@ -9,7 +9,7 @@
 namespace fixes
 {
 	utils::hook::detour hook_UI_StartServerRefresh;
-	utils::hook::detour hook_CL_Disconnect_f;
+	utils::hook::detour hook_CL_Disconnect;
 
 	uintptr_t pfield_charevent_return = 0x40CB77;
 	uintptr_t pfield_charevent_continue = 0x40CB23;
@@ -73,10 +73,10 @@ namespace fixes
 		return dest;
 	}
 	
-	static void stub_CL_Disconnect_f()
+	static void stub_CL_Disconnect(stock::qboolean showMainMenu)
 	{
 		stock::Cvar_Set("timescale", "1");
-		hook_CL_Disconnect_f.invoke();
+		hook_CL_Disconnect.invoke(showMainMenu);
 	}
 	
 	class component final : public component_interface
@@ -98,7 +98,7 @@ namespace fixes
 			utils::hook::nop(0x0042d122, 5);
 			
 			// Prevent timescale remaining modified after leaving server/demo
-			hook_CL_Disconnect_f.create(0x0040f5f0, stub_CL_Disconnect_f);
+			hook_CL_Disconnect.create(0x0040ef90, stub_CL_Disconnect);
 		}
 
 		void post_ui_mp() override

@@ -16,6 +16,8 @@ namespace cvars
 	stock::cvar_t* cl_allowDownload;
 	stock::cvar_t* con_boldgamemessagetime;
 	stock::cvar_t* com_sv_running;
+	stock::cvar_t* com_timescale;
+	stock::cvar_t* sv_cheats;
 
 	namespace vm
 	{
@@ -34,6 +36,8 @@ namespace cvars
 		cl_allowDownload = stock::Cvar_FindVar("cl_allowDownload");
 		con_boldgamemessagetime = stock::Cvar_FindVar("con_boldgamemessagetime");
 		com_sv_running = stock::Cvar_FindVar("sv_running");
+		com_timescale = stock::Cvar_FindVar("timescale");
+		sv_cheats = stock::Cvar_FindVar("sv_cheats");
 	}
 
 	static void stub_CG_RegisterCvars()

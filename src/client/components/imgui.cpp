@@ -27,6 +27,7 @@ namespace imgui
 	bool cg_fovScaleEnable = false;
 	float cg_fovScale = 0.f;
 	bool record_respawn = false;
+	float com_timescale = 0.f;
 	
 	void toggle_menu_flag()
 	{
@@ -95,6 +96,7 @@ namespace imgui
 		cg_fovScaleEnable = view::cg_fovScaleEnable->integer;
 		cg_fovScale = view::cg_fovScale->value;
 		record_respawn = view::record_respawn->integer;
+		com_timescale = cvars::com_timescale->value;
 
 		if (*stock::cgvm != NULL)
 		{
@@ -200,6 +202,14 @@ namespace imgui
 			ImGui::SliderFloat("##slider_cg_fovScale", &cg_fovScale, 1.f, 1.4f, "%.2f", ImGuiSliderFlags_NoInput);
 			if (!cg_fovScaleEnable) ImGui::EndDisabled();
 
+			ImGui::Spacing();
+			
+			if (*stock::cgvm == NULL || !cvars::sv_cheats->integer) ImGui::BeginDisabled();
+			ImGui::Text("Timescale");
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SliderFloat("##slider_com_timescale", &com_timescale, 0.1f, 5, "%.1f", ImGuiSliderFlags_NoInput);
+			if (*stock::cgvm == NULL || !cvars::sv_cheats->integer) ImGui::EndDisabled();
+
 			ImGui::EndTabItem();
 		}
 	}
@@ -248,6 +258,7 @@ namespace imgui
 		stock::Cvar_Set(view::cg_fovScaleEnable->name, cg_fovScaleEnable ? "1" : "0");
 		stock::Cvar_Set(view::cg_fovScale->name, utils::string::va("%.2f", cg_fovScale));
 		stock::Cvar_Set(view::record_respawn->name, record_respawn ? "1" : "0");
+		stock::Cvar_Set(cvars::com_timescale->name, utils::string::va("%.1f", com_timescale));
 		
 		if (*stock::cgvm != NULL)
 		{

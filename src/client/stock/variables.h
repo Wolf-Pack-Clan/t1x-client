@@ -49,6 +49,8 @@ namespace cvars
 	extern stock::cvar_t* cl_allowDownload;
 	extern stock::cvar_t* con_boldgamemessagetime;
 	extern stock::cvar_t* com_sv_running;
+	extern stock::cvar_t* com_timescale;
+	extern stock::cvar_t* sv_cheats;
 
 	namespace vm
 	{
