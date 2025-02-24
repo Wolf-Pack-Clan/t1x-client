@@ -9,7 +9,7 @@ ___
 ### Usage and Build steps
 [Wiki](https://github.com/raphael12333/iw1x-client/wiki)
 ___
-![preview](https://github.com/user-attachments/assets/d18e55e4-a588-45e7-a737-624297a96335)
+![ss](https://github.com/user-attachments/assets/ba98088a-b158-42f6-b3d1-32fb287a1de1)
 ___
 #### References
 - [AlterWare](https://alterware.dev/) & [Aurora](https://auroramod.dev/)
