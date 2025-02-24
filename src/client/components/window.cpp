@@ -38,7 +38,7 @@ namespace window
 					{
 						if (!imgui::waitForMenuKeyRelease)
 						{
-							imgui::toggle_menu_flag();
+							imgui::toggle_menu(false);
 							imgui::waitForMenuKeyRelease = true;
 						}
 						return 1; // Prevent Windows Alt+Esc behavior
@@ -166,7 +166,7 @@ namespace window
 			break;
 		case WM_CHAR:
 			if (wParam == VK_ESCAPE && imgui::displayed)
-				imgui::toggle_menu_flag(); // Allow closing imgui by pressing only Esc
+				imgui::toggle_menu(false);
 			break;
 		case WM_KEYDOWN:
 			if (wParam == VK_ESCAPE)

@@ -4,6 +4,9 @@
 
 namespace imgui
 {
+#define BEGINTABITEM_SPACE(label) if (ImGui::BeginTabItem(label)) { ImGui::Dummy(ImVec2(0, 5));
+#define ENDTABITEM_SPACED() ImGui::EndTabItem(); }
+
 	bool initialized = false;
 	bool displayed = false;
 	bool waitForMenuKeyRelease = false;
@@ -28,9 +31,21 @@ namespace imgui
 	float cg_fovScale = 0.f;
 	bool record_respawn = false;
 	float com_timescale = 0.f;
-	
-	void toggle_menu_flag()
+
+	static void _toggle_menu()
 	{
+		toggle_menu(false);
+	}
+
+	void toggle_menu(bool closedUsingButton)
+	{
+		if (closedUsingButton)
+		{
+			*stock::mouseInitialized = stock::qtrue;
+			stock::IN_ActivateMouse();
+			return;
+		}
+		
 		if (!displayed)
 		{
 			displayed = true;
@@ -55,12 +70,8 @@ namespace imgui
 		ImGui::CreateContext();
 
 		ImGuiIO& io = ImGui::GetIO();
-		ImGuiStyle& style = ImGui::GetStyle();
-
 		io.IniFilename = "iw1x_imgui.ini";
 		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Verdana.ttf", 16.0f);
-		style.WindowPadding.x += 5;
-		style.WindowPadding.y += 5;
 
 		ImGui_ImplWin32_InitForOpenGL(*stock::hWnd);
 		ImGui_ImplOpenGL2_Init();
@@ -114,7 +125,7 @@ namespace imgui
 		ImGui::SetNextWindowSize(ImVec2(300, 0));
 		ImGui::SetNextWindowPos(ImVec2(25, 80), ImGuiCond_FirstUseEver);
 		ImGui::SetNextWindowFocus();
-		ImGui::Begin("##", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+		ImGui::Begin("##", &displayed, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
 		if (ImGui::BeginTabBar("TabBar"))
 		{
@@ -127,121 +138,112 @@ namespace imgui
 		}
 		
 		ImGui::End();
-
+		
+		if (!displayed)
+			toggle_menu(true);
+		
 		menu_updates_settings();
 	}
 
 	void draw_menu_tab_Security()
 	{
-		if (ImGui::BeginTabItem("Security"))
-		{
-			ImGui::Spacing();
+		BEGINTABITEM_SPACE("Security")
 
-			ImGui::Checkbox("Block downloads", &cl_allowDownload);
+		ImGui::Checkbox("Block downloads", &cl_allowDownload);
 
-			ImGui::EndTabItem();
-		}
+		ENDTABITEM_SPACED()
 	}
 
 	void draw_menu_tab_UI()
 	{
-		if (ImGui::BeginTabItem("UI"))
-		{
-			ImGui::Spacing();
+		BEGINTABITEM_SPACE("UI")
 
-			if (*stock::cgvm == NULL) ImGui::BeginDisabled();
-			ImGui::Checkbox("FPS", &cg_drawFPS);
-			if (*stock::cgvm == NULL) ImGui::EndDisabled();
+		if (*stock::cgvm == NULL) ImGui::BeginDisabled();
+		ImGui::Checkbox("FPS", &cg_drawFPS);
+		if (*stock::cgvm == NULL) ImGui::EndDisabled();
 
-			if (*stock::cgvm == NULL || cvars::com_sv_running->integer) ImGui::BeginDisabled();
-			ImGui::Checkbox("Lagometer", &cg_lagometer);
-			if (*stock::cgvm == NULL || cvars::com_sv_running->integer) ImGui::EndDisabled();
+		if (*stock::cgvm == NULL || cvars::com_sv_running->integer) ImGui::BeginDisabled();
+		ImGui::Checkbox("Lagometer", &cg_lagometer);
+		if (*stock::cgvm == NULL || cvars::com_sv_running->integer) ImGui::EndDisabled();
 
-			ImGui::Checkbox("\"Connection Interrupted\"", &cg_drawDisconnect);
-			ImGui::Checkbox("Weapon selection", &cg_drawWeaponSelect);
+		ImGui::Checkbox("\"Connection Interrupted\"", &cg_drawDisconnect);
+		ImGui::Checkbox("Weapon selection", &cg_drawWeaponSelect);
 
-			ImGui::Spacing();
+		ImGui::Spacing();
 
-			if (*stock::cgvm == NULL) ImGui::BeginDisabled();
-			ImGui::Text("Chat lines");
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			ImGui::SliderInt("##slider_cg_chatHeight", &cg_chatHeight, 0, 8, "%i", ImGuiSliderFlags_NoInput);
-			if (*stock::cgvm == NULL) ImGui::EndDisabled();
+		if (*stock::cgvm == NULL) ImGui::BeginDisabled();
+		ImGui::Text("Chat lines");
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		ImGui::SliderInt("##slider_cg_chatHeight", &cg_chatHeight, 0, 8, "%i", ImGuiSliderFlags_NoInput);
+		if (*stock::cgvm == NULL) ImGui::EndDisabled();
 
-			ImGui::Spacing();
+		ImGui::Spacing();
 
-			ImGui::Text("Middle messages seconds");
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			ImGui::SliderInt("##slider_con_boldgamemessagetime", &con_boldgamemessagetime, 0, 8, "%i", ImGuiSliderFlags_NoInput);
+		ImGui::Text("Middle messages seconds");
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		ImGui::SliderInt("##slider_con_boldgamemessagetime", &con_boldgamemessagetime, 0, 8, "%i", ImGuiSliderFlags_NoInput);
 
-			ImGui::EndTabItem();
-		}
+		ENDTABITEM_SPACED()
 	}
 
 	void draw_menu_tab_View()
 	{
-		if (ImGui::BeginTabItem("View"))
-		{
-			ImGui::Spacing();
+		BEGINTABITEM_SPACE("View")
 
-			ImGui::Checkbox("Record when respawn", &record_respawn);
+		ImGui::Checkbox("Record when respawn", &record_respawn);
 
-			ImGui::Spacing();
+		ImGui::Spacing();
 
-			if (*stock::cgvm == NULL) ImGui::BeginDisabled();
-			ImGui::Text("FOV");
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			ImGui::SliderFloat("##slider_cg_fov", &cg_fov, 80.f, 95.f, "%.2f", ImGuiSliderFlags_NoInput);
-			if (*stock::cgvm == NULL) ImGui::EndDisabled();
+		if (*stock::cgvm == NULL) ImGui::BeginDisabled();
+		ImGui::Text("FOV");
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		ImGui::SliderFloat("##slider_cg_fov", &cg_fov, 80.f, 95.f, "%.2f", ImGuiSliderFlags_NoInput);
+		if (*stock::cgvm == NULL) ImGui::EndDisabled();
 
-			ImGui::Spacing();
+		ImGui::Spacing();
 
-			ImGui::Checkbox("FOV scale", &cg_fovScaleEnable);
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			if (!cg_fovScaleEnable) ImGui::BeginDisabled();
-			ImGui::SliderFloat("##slider_cg_fovScale", &cg_fovScale, 1.f, 1.4f, "%.2f", ImGuiSliderFlags_NoInput);
-			if (!cg_fovScaleEnable) ImGui::EndDisabled();
+		ImGui::Checkbox("FOV scale", &cg_fovScaleEnable);
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		if (!cg_fovScaleEnable) ImGui::BeginDisabled();
+		ImGui::SliderFloat("##slider_cg_fovScale", &cg_fovScale, 1.f, 1.4f, "%.2f", ImGuiSliderFlags_NoInput);
+		if (!cg_fovScaleEnable) ImGui::EndDisabled();
 
-			ImGui::Spacing();
+		ImGui::Spacing();
 			
-			if (*stock::cgvm == NULL || !cvars::sv_cheats->integer) ImGui::BeginDisabled();
-			ImGui::Text("Timescale");
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			ImGui::SliderFloat("##slider_com_timescale", &com_timescale, 0.1f, 5, "%.1f", ImGuiSliderFlags_NoInput);
-			if (*stock::cgvm == NULL || !cvars::sv_cheats->integer) ImGui::EndDisabled();
+		if (*stock::cgvm == NULL || !cvars::sv_cheats->integer) ImGui::BeginDisabled();
+		ImGui::Text("Timescale");
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		ImGui::SliderFloat("##slider_com_timescale", &com_timescale, 0.1f, 5, "%.1f", ImGuiSliderFlags_NoInput);
+		if (*stock::cgvm == NULL || !cvars::sv_cheats->integer) ImGui::EndDisabled();
 
-			ImGui::EndTabItem();
-		}
+		ENDTABITEM_SPACED()
 	}
 
 	void draw_menu_tab_Movement()
 	{
-		if (ImGui::BeginTabItem("Movement"))
-		{
-			ImGui::Spacing();
+		BEGINTABITEM_SPACE("Movement")
 
-			ImGui::Checkbox("Raw mouse input", &m_rawinput);
+		ImGui::Checkbox("Raw mouse input", &m_rawinput);
 
-			ImGui::Spacing();
+		ImGui::Spacing();
 
-			// Sensitivity multiplier
-			ImGui::Checkbox("Sensitivity multiplier", &sensitivity_adsScaleEnable);
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			if (!sensitivity_adsScaleEnable) ImGui::BeginDisabled();
-			ImGui::SliderFloat("##slider_sensitivity_adsScale", &sensitivity_adsScale, 0.15f, 1.f, "%.2f", ImGuiSliderFlags_NoInput);
-			if (!sensitivity_adsScaleEnable) ImGui::EndDisabled();
+		// Sensitivity multiplier
+		ImGui::Checkbox("Sensitivity multiplier", &sensitivity_adsScaleEnable);
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		if (!sensitivity_adsScaleEnable) ImGui::BeginDisabled();
+		ImGui::SliderFloat("##slider_sensitivity_adsScale", &sensitivity_adsScale, 0.15f, 1.f, "%.2f", ImGuiSliderFlags_NoInput);
+		if (!sensitivity_adsScaleEnable) ImGui::EndDisabled();
 
-			ImGui::Spacing();
+		ImGui::Spacing();
 
-			// Sensitivity sniper multiplier
-			ImGui::Checkbox("Sensitivity sniper multiplier", &sensitivity_adsScaleSniperEnable);
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			if (!sensitivity_adsScaleSniperEnable) ImGui::BeginDisabled();
-			ImGui::SliderFloat("##slider_sensitivity_adsScaleSniper", &sensitivity_adsScaleSniper, 0.15f, 1.f, "%.2f", ImGuiSliderFlags_NoInput);
-			if (!sensitivity_adsScaleSniperEnable) ImGui::EndDisabled();
+		// Sensitivity sniper multiplier
+		ImGui::Checkbox("Sensitivity sniper multiplier", &sensitivity_adsScaleSniperEnable);
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		if (!sensitivity_adsScaleSniperEnable) ImGui::BeginDisabled();
+		ImGui::SliderFloat("##slider_sensitivity_adsScaleSniper", &sensitivity_adsScaleSniper, 0.15f, 1.f, "%.2f", ImGuiSliderFlags_NoInput);
+		if (!sensitivity_adsScaleSniperEnable) ImGui::EndDisabled();
 
-			ImGui::EndTabItem();
-		}
+		ENDTABITEM_SPACED()
 	}
 
 	void menu_updates_settings()
@@ -330,7 +332,7 @@ namespace imgui
 
 		void post_unpack() override
 		{
-			stock::Cmd_AddCommand("imgui", toggle_menu_flag);
+			stock::Cmd_AddCommand("imgui", _toggle_menu);
 		}
 		
 		void pre_destroy() override
