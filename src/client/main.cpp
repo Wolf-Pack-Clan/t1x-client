@@ -47,7 +47,7 @@ static LONG WINAPI CrashLogger(EXCEPTION_POINTERS* exceptionPointers)
         logFile << "Exception Address: 0x" << std::hex << exceptionAddress << std::endl;
         logFile << "Exception Code: 0x" << std::hex << exceptionCode << std::endl;
 
-        std::string errorMessage = std::string("A crash occured, please send your ") + crashFilename + " file in the Discord server.";
+        std::string errorMessage = "A crash occured, please send your " + crashFilename + " file in the Discord server.";
 
         MessageBoxA(NULL, errorMessage.c_str(), MOD_NAME, MB_ICONERROR | MB_SETFOREGROUND);
     }

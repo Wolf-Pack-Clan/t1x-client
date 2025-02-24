@@ -35,10 +35,10 @@ namespace ui
 		const auto scale = 0.21f;
 		float color[4] = { 1.f, 1.f, 1.f, 0.80f };
 		float color_shadow[4] = { 0.f, 0.f, 0.f, 0.80f };
-		const auto* text = MOD_NAME;
+		std::string text = std::string(MOD_NAME) + ".com";
 
-		stock::SCR_DrawString(x + 1, y + 1, fontID, scale, color_shadow, text, NULL, NULL, NULL); // Shadow first
-		stock::SCR_DrawString(x, y, fontID, scale, color, text, NULL, NULL, NULL);
+		stock::SCR_DrawString(x + 1, y + 1, fontID, scale, color_shadow, text.c_str(), NULL, NULL, NULL); // Shadow first
+		stock::SCR_DrawString(x, y, fontID, scale, color, text.c_str(), NULL, NULL, NULL);
 	}
 	
 	class component final : public component_interface
@@ -49,6 +49,9 @@ namespace ui
 			branding = stock::Cvar_Get("branding", "1", stock::CVAR_ARCHIVE);
 			cg_drawWeaponSelect = stock::Cvar_Get("cg_drawWeaponSelect", "1", stock::CVAR_ARCHIVE);
 			cg_drawDisconnect = stock::Cvar_Get("cg_drawDisconnect", "1", stock::CVAR_ARCHIVE);
+
+			// Replace "k" by "KB" in SCR_DrawDemoRecording
+			utils::hook::set(0x00416b82 + 1, "RECORDING %s: %iKB");
 
 			scheduler::loop(draw_branding, scheduler::pipeline::renderer);
 		}

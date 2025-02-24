@@ -31,6 +31,8 @@ namespace stock
 	WEAK adjuster<qboolean> mouseActive{ 0x8e2520 };
 	WEAK adjuster<qboolean> mouseInitialized{ 0x8e2524 };
 	WEAK adjuster<connstate_t> cls_state{ 0x155F2C0 };
+	WEAK adjuster<qboolean> clc_demorecording{ 0x015ef000 };
+
 
 
 

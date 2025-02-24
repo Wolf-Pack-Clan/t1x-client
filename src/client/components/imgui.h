@@ -19,5 +19,9 @@ namespace imgui
 	void toggle_menu_flag();
 	void new_frame();
 	void draw_menu();
+	void draw_menu_tab_Security();
+	void draw_menu_tab_UI();
+	void draw_menu_tab_View();
+	void draw_menu_tab_Movement();
 	void end_frame();
 }

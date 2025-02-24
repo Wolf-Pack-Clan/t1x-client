@@ -26,8 +26,6 @@ namespace stock
 
 
 
-
-	//WEAK adjuster<void()> CL_Disconnect_f{ 0x0040f5f0 };
 	//WEAK symbol<void(float x, float y, const char* s, float alpha)> CG_DrawBigString{ 0, 0x30019710, BASE_CGAME_MP };
 	//WEAK symbol<int(vm_t* vm, int callnum, ...)> VM_Call{ 0, 0x00460480 };
 }

@@ -85,7 +85,7 @@ namespace window
 	
 	static void stub_IN_MouseMove()
 	{
-		// Apply raw input only when player can move
+		// Apply raw input only when player can move // TODO: Maybe hook CG_MouseEvent instead then
 		if (movement::m_rawinput->integer)
 		{
 			if (*stock::cls_keyCatchers == 0) // TODO: Figure out why have to use "== 0" instead of "& KEYCATCH_CGAME"

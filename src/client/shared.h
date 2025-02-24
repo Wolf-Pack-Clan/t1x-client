@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include "address_adjuster.h"
 #include "stock/types.h"

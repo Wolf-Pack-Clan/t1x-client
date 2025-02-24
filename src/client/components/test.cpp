@@ -11,23 +11,26 @@ namespace test
 	static void Command_test()
 	{
 #if 0
-
-
-
+		
+		
+		auto test = *(int*)(*(int*)ABSOLUTE_CGAME_MP(0x301E2160) + 0x18);
 		std::stringstream ss;
-		stock::cvarTable_t* cv;
-		int i;
-		auto cvarTable = stock::cgame_mp::cvarTable;
-		for (i = 0, cv = cvarTable; i < 0xad; i++, cv++)
-		{
-			ss << "####### cvarName: " << cv->cvarName << ", i = " << i << std::endl;
-		}
+		ss << "####### check: " << std::hex <<test << std::endl;
 		OutputDebugString(ss.str().c_str());
 
 
 
 #endif
 	}
+
+#if 0
+	utils::hook::detour hook_Test;
+	void stub_Test()
+	{
+		OutputDebugString("stub_Test\n");
+		hook_Test.invoke();
+	}
+#endif
 	
 	class component final : public component_interface
 	{
@@ -35,6 +38,11 @@ namespace test
 		void post_unpack() override
 		{
 			stock::Cmd_AddCommand("test", Command_test);
+		}
+		
+		void post_cgame() override
+		{
+			//hook_Test.create(ABSOLUTE_CGAME_MP(0x30028a70), stub_Test);
 		}
 	};
 }
