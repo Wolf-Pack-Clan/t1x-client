@@ -7,32 +7,38 @@ namespace discord
 	DiscordRichPresence presence{};
 	std::time_t init_timestamp = -1;
 	stock::cvar_t* discord;
+	bool isReady = false;
 
-#ifdef RELEASE
-#pragma warning(push)
-#pragma warning(disable: 4100)
-#endif
-	void ready(const DiscordUser* request)
+	static void ready(const DiscordUser*)
 	{
-#ifdef RELEASE
-#pragma warning(pop)
-#endif
 #ifdef DEBUG
 		std::stringstream ss;
 		ss << "####### discord ready" << std::endl;
 		OutputDebugString(ss.str().c_str());
 #endif
+		isReady = true;
 		updateInfo();
 	}
 
 #ifdef DEBUG
-	void errored(const int error_code, const char* message)
+	static void errored(const int error_code, const char* message)
 	{
 		std::stringstream ss;
 		ss << "####### discord errored, error_code: " << error_code << ", message: " << message << std::endl;
 		OutputDebugString(ss.str().c_str());
 	}
 #endif
+	
+	static void disconnected(const int, const char*)
+	{
+#ifdef DEBUG
+		std::stringstream ss;
+		ss << "####### discord disconnected" << std::endl;
+		OutputDebugString(ss.str().c_str());
+#endif
+		isReady = false;
+		init_timestamp = -1;
+	}
 
 
 
@@ -68,14 +74,14 @@ namespace discord
 			return;
 		}
 
-		if (init_timestamp == -1)
+		if (init_timestamp == -1 && isReady)
 		{
 			init_timestamp = std::time(nullptr);
 			presence.startTimestamp = init_timestamp;
 			Discord_UpdatePresence(&presence);
 		}
 		
-		if (*stock::cls_state == stock::CA_ACTIVE)
+		if (*stock::cls_state == stock::CA_ACTIVE && !*stock::clc_demoplaying)
 		{
 			char* cl_gameState_stringData = (char*)0x01436a7c;
 			int* cl_gameState_stringOffsets = (int*)0x1434A7C;
@@ -88,8 +94,12 @@ namespace discord
 			sv_hostname = utils::string::clean(sv_hostname, true);
 			
 			std::string g_gametype_mapname = g_gametype + " - " + mapname;
-			// TODO: Access connected players count
-			std::string connectedClients_sv_maxclients_sv_hostname = std::string("(?/") + sv_maxclients + ") - " + sv_hostname;
+
+			// Both seem to provide the count of connected players
+			int numPlayers = *(int*)(address_cgame_mp + 0x1e4248);
+			//int numPlayers = *(int*)(address_cgame_mp + 0x1f6a34);
+			// TODO: Clean
+			std::string connectedClients_sv_maxclients_sv_hostname = std::string("(") + std::to_string(numPlayers) + "/" + sv_maxclients + ") - " + sv_hostname;
 
 			presence.details = g_gametype_mapname.c_str();
 			presence.state = connectedClients_sv_maxclients_sv_hostname.c_str();
@@ -119,6 +129,8 @@ namespace discord
 #ifdef DEBUG
 			handlers.errored = errored;
 #endif
+			handlers.disconnected = disconnected;
+
 			/*handlers.joinGame = join_game;
 			handlers.joinRequest = join_request;*/
 			

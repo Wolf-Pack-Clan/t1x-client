@@ -19,6 +19,13 @@ namespace security
 		"sv_cheats",
 		"sv_serverid",
 		"timescale",
+
+		/*
+		These 2 are written by default, preventing writing doesn't seem to be a problem
+		But there is a crash in FS_ReturnPath sometimes, so now allowing to see if the crash never occurs again
+		*/
+		"sv_referencedPakNames",
+		"sv_referencedPaks",
 	};
 
 	static bool cvarIsInWhitelist(const char* cvar_name)
@@ -75,6 +82,7 @@ namespace security
 			//window::MSG("Non-pk3 download protection triggered", MB_ICONEXCLAMATION);
 			//return;
 
+			// TODO: Don't display "error"
 			stock::Com_Error(stock::ERR_DROP, "Non-pk3 download protection triggered");
 		}
 

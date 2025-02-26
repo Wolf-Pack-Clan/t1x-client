@@ -15,7 +15,5 @@ namespace discord
 {
 	extern stock::cvar_t* discord;;
 
-	void ready(const DiscordUser* request);
-	void errored(const int error_code, const char* message);
 	void updateInfo();
 }
