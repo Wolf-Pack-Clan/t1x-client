@@ -2,6 +2,8 @@
 #if 1
 #include "security.h"
 
+#include "window.h"
+
 namespace security
 {
 	stock::cvar_t* cl_allowDownload;
@@ -61,13 +63,20 @@ namespace security
 	static void CL_SystemInfoChanged_stub()
 	{
 		char* cl_gameState_stringData = (char*)0x01436a7c;
-		int* cl_gameState_stringOffsets = (int*)0x01434a80;
-		char* systemInfo = cl_gameState_stringData + cl_gameState_stringOffsets[0];
+		int* cl_gameState_stringOffsets = (int*)0x1434A7C;
+		char* systemInfo = cl_gameState_stringData + cl_gameState_stringOffsets[stock::CS_SYSTEMINFO];
 		const char* sv_pakNames = stock::Info_ValueForKey(systemInfo, "sv_pakNames");
 		const char* sv_referencedPakNames = stock::Info_ValueForKey(systemInfo, "sv_referencedPakNames");
-
+		
 		if (strstr(sv_pakNames, "@") || strstr(sv_referencedPakNames, "@"))
+		{
+			//stock::Cbuf_ExecuteText(stock::EXEC_APPEND, "disconnect\n");
+			//stock::CL_Disconnect_f();
+			//window::MSG("Non-pk3 download protection triggered", MB_ICONEXCLAMATION);
+			//return;
+
 			stock::Com_Error(stock::ERR_DROP, "Non-pk3 download protection triggered");
+		}
 
 		CL_SystemInfoChanged_hook.invoke();
 	}

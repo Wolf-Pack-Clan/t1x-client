@@ -17,7 +17,7 @@ namespace window
 
 	void MSG(const std::string& text, UINT flags)
 	{
-		scheduler::once([text, flags]() { MessageBoxA(*stock::hWnd, text.c_str(), MOD_NAME, flags); });
+		scheduler::once([text, flags]() { MessageBoxA(*stock::hWnd, text.c_str(), MOD_NAME, flags); }, scheduler::async);
 	}
 
 	static LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)

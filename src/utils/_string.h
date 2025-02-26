@@ -79,6 +79,9 @@ namespace utils::string
 
 	const char* va(const char* fmt, ...);
 
+	void clean(const char* in, char* out, int max, bool removeColors = true);
+	std::string clean(const std::string& string, bool removeColors = true);
+
 	std::string convert(const std::wstring& wstr);
 	std::wstring convert(const std::string& str);
 }

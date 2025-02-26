@@ -23,7 +23,7 @@ namespace stock
 	WEAK adjuster<void(cbufExec_t exec_when, const char* text)> Cbuf_ExecuteText{ 0x00428290 };
 
 
-
+	WEAK adjuster<void()> CL_Disconnect_f{ 0x0040f5f0 };
 
 
 	//WEAK symbol<void(float x, float y, const char* s, float alpha)> CG_DrawBigString{ 0, 0x30019710, BASE_CGAME_MP };

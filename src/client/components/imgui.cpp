@@ -31,6 +31,7 @@ namespace imgui
 	float cg_fovScale = 0.f;
 	bool record_respawn = false;
 	float com_timescale = 0.f;
+	bool discord = false;
 
 	static void _toggle_menu()
 	{
@@ -108,6 +109,7 @@ namespace imgui
 		cg_fovScale = view::cg_fovScale->value;
 		record_respawn = view::record_respawn->integer;
 		com_timescale = cvars::com_timescale->value;
+		discord = discord::discord->integer;
 
 		if (*stock::cgvm != NULL)
 		{
@@ -133,6 +135,7 @@ namespace imgui
 			draw_menu_tab_UI();
 			draw_menu_tab_View();
 			draw_menu_tab_Movement();
+			draw_menu_tab_Social();
 
 			ImGui::EndTabBar();
 		}
@@ -148,8 +151,8 @@ namespace imgui
 	void draw_menu_tab_Security()
 	{
 		BEGINTABITEM_SPACE("Security")
-
-		ImGui::Checkbox("Prevent downloading", &cl_allowDownload);
+			
+			ImGui::Checkbox("Prevent downloading", &cl_allowDownload);
 
 		ENDTABITEM_SPACED()
 	}
@@ -158,30 +161,30 @@ namespace imgui
 	{
 		BEGINTABITEM_SPACE("UI")
 
-		if (*stock::cgvm == NULL) ImGui::BeginDisabled();
-		ImGui::Checkbox("FPS counter", &cg_drawFPS);
-		if (*stock::cgvm == NULL) ImGui::EndDisabled();
+			if (*stock::cgvm == NULL) ImGui::BeginDisabled();
+			ImGui::Checkbox("FPS counter", &cg_drawFPS);
+			if (*stock::cgvm == NULL) ImGui::EndDisabled();
 
-		if (*stock::cgvm == NULL || cvars::com_sv_running->integer) ImGui::BeginDisabled();
-		ImGui::Checkbox("Lagometer", &cg_lagometer);
-		if (*stock::cgvm == NULL || cvars::com_sv_running->integer) ImGui::EndDisabled();
+			if (*stock::cgvm == NULL || cvars::com_sv_running->integer) ImGui::BeginDisabled();
+			ImGui::Checkbox("Lagometer", &cg_lagometer);
+			if (*stock::cgvm == NULL || cvars::com_sv_running->integer) ImGui::EndDisabled();
 
-		ImGui::Checkbox("Connection interrupted indicator", &cg_drawDisconnect);
-		ImGui::Checkbox("Weapon selection", &cg_drawWeaponSelect);
+			ImGui::Checkbox("Connection interrupted indicator", &cg_drawDisconnect);
+			ImGui::Checkbox("Weapon selection", &cg_drawWeaponSelect);
 
-		ImGui::Spacing();
+			ImGui::Spacing();
 
-		if (*stock::cgvm == NULL) ImGui::BeginDisabled();
-		ImGui::Text("Chat lines");
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		ImGui::SliderInt("##slider_cg_chatHeight", &cg_chatHeight, 0, 8, "%i", ImGuiSliderFlags_NoInput);
-		if (*stock::cgvm == NULL) ImGui::EndDisabled();
+			if (*stock::cgvm == NULL) ImGui::BeginDisabled();
+			ImGui::Text("Chat lines");
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SliderInt("##slider_cg_chatHeight", &cg_chatHeight, 0, 8, "%i", ImGuiSliderFlags_NoInput);
+			if (*stock::cgvm == NULL) ImGui::EndDisabled();
 
-		ImGui::Spacing();
+			ImGui::Spacing();
 
-		ImGui::Text("Middle messages seconds");
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		ImGui::SliderInt("##slider_con_boldgamemessagetime", &con_boldgamemessagetime, 0, 8, "%i", ImGuiSliderFlags_NoInput);
+			ImGui::Text("Middle messages seconds");
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SliderInt("##slider_con_boldgamemessagetime", &con_boldgamemessagetime, 0, 8, "%i", ImGuiSliderFlags_NoInput);
 
 		ENDTABITEM_SPACED()
 	}
@@ -190,31 +193,31 @@ namespace imgui
 	{
 		BEGINTABITEM_SPACE("View")
 
-		ImGui::Checkbox("Record when respawn", &record_respawn);
+			ImGui::Checkbox("Record when respawn", &record_respawn);
 
-		ImGui::Spacing();
+			ImGui::Spacing();
 
-		if (*stock::cgvm == NULL) ImGui::BeginDisabled();
-		ImGui::Text("FOV");
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		ImGui::SliderFloat("##slider_cg_fov", &cg_fov, 80.f, 95.f, "%.2f", ImGuiSliderFlags_NoInput);
-		if (*stock::cgvm == NULL) ImGui::EndDisabled();
+			if (*stock::cgvm == NULL) ImGui::BeginDisabled();
+			ImGui::Text("FOV");
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SliderFloat("##slider_cg_fov", &cg_fov, 80.f, 95.f, "%.2f", ImGuiSliderFlags_NoInput);
+			if (*stock::cgvm == NULL) ImGui::EndDisabled();
 
-		ImGui::Spacing();
+			ImGui::Spacing();
 
-		ImGui::Checkbox("FOV scale", &cg_fovScaleEnable);
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		if (!cg_fovScaleEnable) ImGui::BeginDisabled();
-		ImGui::SliderFloat("##slider_cg_fovScale", &cg_fovScale, 1.f, 1.4f, "%.2f", ImGuiSliderFlags_NoInput);
-		if (!cg_fovScaleEnable) ImGui::EndDisabled();
+			ImGui::Checkbox("FOV scale", &cg_fovScaleEnable);
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			if (!cg_fovScaleEnable) ImGui::BeginDisabled();
+			ImGui::SliderFloat("##slider_cg_fovScale", &cg_fovScale, 1.f, 1.4f, "%.2f", ImGuiSliderFlags_NoInput);
+			if (!cg_fovScaleEnable) ImGui::EndDisabled();
 
-		ImGui::Spacing();
+			ImGui::Spacing();
 			
-		if (*stock::cgvm == NULL || !cvars::sv_cheats->integer) ImGui::BeginDisabled();
-		ImGui::Text("Time scale");
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		ImGui::SliderFloat("##slider_com_timescale", &com_timescale, 0.1f, 5, "%.1f", ImGuiSliderFlags_NoInput);
-		if (*stock::cgvm == NULL || !cvars::sv_cheats->integer) ImGui::EndDisabled();
+			if (*stock::cgvm == NULL || !cvars::sv_cheats->integer) ImGui::BeginDisabled();
+			ImGui::Text("Time scale");
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SliderFloat("##slider_com_timescale", &com_timescale, 0.1f, 5, "%.1f", ImGuiSliderFlags_NoInput);
+			if (*stock::cgvm == NULL || !cvars::sv_cheats->integer) ImGui::EndDisabled();
 
 		ENDTABITEM_SPACED()
 	}
@@ -223,25 +226,34 @@ namespace imgui
 	{
 		BEGINTABITEM_SPACE("Movement")
 
-		ImGui::Checkbox("Raw mouse input", &m_rawinput);
+			ImGui::Checkbox("Raw mouse input", &m_rawinput);
 
-		ImGui::Spacing();
+			ImGui::Spacing();
 
-		// ADS sensitivity scale
-		ImGui::Checkbox("ADS sensitivity scale", &sensitivity_adsScaleEnable);
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		if (!sensitivity_adsScaleEnable) ImGui::BeginDisabled();
-		ImGui::SliderFloat("##slider_sensitivity_adsScale", &sensitivity_adsScale, 0.15f, 1.f, "%.2f", ImGuiSliderFlags_NoInput);
-		if (!sensitivity_adsScaleEnable) ImGui::EndDisabled();
+			// ADS sensitivity scale
+			ImGui::Checkbox("ADS sensitivity scale", &sensitivity_adsScaleEnable);
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			if (!sensitivity_adsScaleEnable) ImGui::BeginDisabled();
+			ImGui::SliderFloat("##slider_sensitivity_adsScale", &sensitivity_adsScale, 0.15f, 1.f, "%.2f", ImGuiSliderFlags_NoInput);
+			if (!sensitivity_adsScaleEnable) ImGui::EndDisabled();
 
-		ImGui::Spacing();
+			ImGui::Spacing();
 
-		// ADS sensitivity scale sniper
-		ImGui::Checkbox("ADS sensitivity scale [sniper]", &sensitivity_adsScaleSniperEnable);
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		if (!sensitivity_adsScaleSniperEnable) ImGui::BeginDisabled();
-		ImGui::SliderFloat("##slider_sensitivity_adsScaleSniper", &sensitivity_adsScaleSniper, 0.15f, 1.f, "%.2f", ImGuiSliderFlags_NoInput);
-		if (!sensitivity_adsScaleSniperEnable) ImGui::EndDisabled();
+			// ADS sensitivity scale sniper
+			ImGui::Checkbox("ADS sensitivity scale [sniper]", &sensitivity_adsScaleSniperEnable);
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			if (!sensitivity_adsScaleSniperEnable) ImGui::BeginDisabled();
+			ImGui::SliderFloat("##slider_sensitivity_adsScaleSniper", &sensitivity_adsScaleSniper, 0.15f, 1.f, "%.2f", ImGuiSliderFlags_NoInput);
+			if (!sensitivity_adsScaleSniperEnable) ImGui::EndDisabled();
+
+		ENDTABITEM_SPACED()
+	}
+
+	void draw_menu_tab_Social()
+	{
+		BEGINTABITEM_SPACE("Social")
+			
+			ImGui::Checkbox("Discord Activity Status", &discord);
 
 		ENDTABITEM_SPACED()
 	}
@@ -261,6 +273,7 @@ namespace imgui
 		stock::Cvar_Set(view::cg_fovScale->name, utils::string::va("%.2f", cg_fovScale));
 		stock::Cvar_Set(view::record_respawn->name, record_respawn ? "1" : "0");
 		stock::Cvar_Set(cvars::com_timescale->name, utils::string::va("%.1f", com_timescale));
+		stock::Cvar_Set(discord::discord->name, discord ? "1" : "0");
 		
 		if (*stock::cgvm != NULL)
 		{

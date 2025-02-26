@@ -66,7 +66,7 @@ linkoptions
 {
 	"/OPT:NOREF", -- Prevents crash when using /GL
 }
-defines { "NDEBUG" }
+defines { "NDEBUG", "RELEASE" }
 fatalwarnings { "All" }
 
 -- Project: client
@@ -90,7 +90,13 @@ submodules.imports()
 project "utils"
 kind "StaticLib"
 files { "../src/utils/**.h", "../src/utils/**.cpp" }
+vpaths
+{
+	["Header Files/*"] = { "../src/utils/**.h" },
+	["Source Files/*"] = { "../src/utils/**.cpp" }
+}
 submodules.imports()
 
-group "Submodules"
+-- Group: submodules
+group "submodules"
 submodules.projects()

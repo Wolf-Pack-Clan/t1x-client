@@ -12,13 +12,6 @@ namespace test
 	{
 #if 0
 
-		std::stringstream ss;
-		int i;
-		for (i = 0; i < 0xad; i++)
-		{
-			ss << "####### cvarName: " << stock::cgame_mp::cvarTable[i].cvarName << ", i = " << i << std::endl;
-		}
-		OutputDebugString(ss.str().c_str());
 
 
 #endif
@@ -42,6 +35,7 @@ namespace test
 			stock::Cmd_AddCommand("test", Command_test);
 
 			//hook_Test.create(0x0040eb40, stub_Test);
+
 		}
 		
 		void post_cgame() override

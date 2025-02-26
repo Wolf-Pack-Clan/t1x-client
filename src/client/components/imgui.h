@@ -9,6 +9,7 @@
 #include "ui.h"
 #include "movement.h"
 #include "view.h"
+#include "discord.h"
 
 namespace imgui
 {
@@ -23,5 +24,6 @@ namespace imgui
 	void draw_menu_tab_UI();
 	void draw_menu_tab_View();
 	void draw_menu_tab_Movement();
+	void draw_menu_tab_Social();
 	void end_frame();
 }

@@ -40,35 +40,11 @@ namespace fixes
 		hook_UI_StartServerRefresh.invoke(full);
 	}
 
-	static char* Q_CleanStr_keep_colors(char* string)
-	{
-		char* d;
-		char* s;
-		int c;
-		s = string;
-		d = string;
-		while ((c = *s) != 0)
-		{
-			if (c >= 0x20 && c <= 0x7E)
-			{
-#pragma warning(push)
-#pragma warning(disable: 4244)
-				* d++ = c;
-#pragma warning(pop)
-			}
-			s++;
-		}
-		*d = '\0';
-		return string;
-	}
 	static char* stub_CL_SetServerInfo_hostname_strncpy(char* dest, const char* src, int destsize)
 	{
-		char hostname[stock::MAX_STRING_CHARS];
-		strncpy_s(hostname, sizeof(hostname), src, _TRUNCATE);
-		Q_CleanStr_keep_colors(hostname);
 #pragma warning(push)
 #pragma warning(disable: 4996)
-		strncpy(dest, hostname, destsize); // destsize is already max-1 (=31), so not using _TRUNCATE, not to lose a char
+		strncpy(dest, utils::string::clean(src, false).c_str(), destsize); // destsize is already max-1 (=31), so not using _TRUNCATE, not to lose a char
 #pragma warning(pop)
 		return dest;
 	}

@@ -1,6 +1,8 @@
 namespace stock
 {
 	constexpr auto MAX_STRING_CHARS = 1024;
+	constexpr auto CS_SERVERINFO = 0;
+	constexpr auto CS_SYSTEMINFO = 1;
 	constexpr auto CVAR_ARCHIVE = 1;
 	constexpr auto KEYCATCH_CONSOLE = 0x0001;
 	constexpr auto KEYCATCH_UI = 0x0002;
@@ -35,11 +37,8 @@ namespace stock
 
 
 
-
-
-
+	//WEAK adjuster<vm_t*> uivm{ 0, 0x0161747c };
 	//WEAK adjuster<int> ping{ 0x41405d };
-	//WEAK symbol<vm_t*> uivm{ 0, 0x0161747c };
 }
 
 namespace cvars
