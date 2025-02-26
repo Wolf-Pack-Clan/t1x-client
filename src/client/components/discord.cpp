@@ -92,17 +92,17 @@ namespace discord
 			std::string sv_maxclients = stock::Info_ValueForKey(serverInfo, "sv_maxclients");
 			std::string sv_hostname = stock::Info_ValueForKey(serverInfo, "sv_hostname");
 			sv_hostname = utils::string::clean(sv_hostname, true);
-			
-			std::string g_gametype_mapname = g_gametype + " - " + mapname;
 
-			// Both seem to provide the count of connected players
+			/*
+			Both seem to provide the count of connected players
+			int numPlayers = *(int*)(address_cgame_mp + 0x1f6a34);
+			TODO: Clean
+			*/
 			int numPlayers = *(int*)(address_cgame_mp + 0x1e4248);
-			//int numPlayers = *(int*)(address_cgame_mp + 0x1f6a34);
-			// TODO: Clean
-			std::string connectedClients_sv_maxclients_sv_hostname = std::string("(") + std::to_string(numPlayers) + "/" + sv_maxclients + ") - " + sv_hostname;
-
-			presence.details = g_gametype_mapname.c_str();
-			presence.state = connectedClients_sv_maxclients_sv_hostname.c_str();
+			
+			presence.details = sv_hostname.c_str();
+			std::string state = mapname + " | " + std::to_string(numPlayers) + " (" + sv_maxclients + ")" + " | " + g_gametype;
+			presence.state = state.c_str();
 			
 			Discord_UpdatePresence(&presence);
 		}
