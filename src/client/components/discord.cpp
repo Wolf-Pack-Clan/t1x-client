@@ -16,7 +16,6 @@ namespace discord
 		ss << "####### discord ready" << std::endl;
 		OutputDebugString(ss.str().c_str());
 #endif
-		presence.instance = 1;
 		isReady = true;
 		updateInfo();
 	}
@@ -40,31 +39,6 @@ namespace discord
 		isReady = false;
 		init_timestamp = -1;
 	}
-
-
-
-
-
-
-
-
-	void join_game(const char* join_secret)
-	{
-		std::stringstream ss;
-		ss << "####### discord join_game, join_secret: " << join_secret << std::endl;
-		OutputDebugString(ss.str().c_str());
-	}
-	void join_request(const DiscordUser* request)
-	{
-		std::stringstream ss;
-		ss << "####### discord join_request" << std::endl;
-		OutputDebugString(ss.str().c_str());
-	}
-
-
-
-
-
 	
 	void updateInfo()
 	{
@@ -112,6 +86,16 @@ namespace discord
 
 
 
+			presence.buttonLabel[0] = "test1";
+			presence.buttonUrl[0] = "https://google.com";
+
+
+			presence.buttonLabel[1] = "test2";
+			presence.buttonUrl[1] = "https://youtube.com";
+
+
+
+
 
 
 			Discord_UpdatePresence(&presence);
@@ -127,32 +111,6 @@ namespace discord
 			}
 		}
 	}
-
-
-
-	utils::hook::detour hook_test;
-	
-	
-	void stub_test(const DiscordRichPresence* presence)
-	{
-		OutputDebugString("############## stub_test\n");
-
-
-
-
-		std::stringstream ss;
-		ss << "###### presence->details: " << presence->details << std::endl;
-		ss << "###### presence->state: " << presence->state << std::endl;
-
-
-
-
-		hook_test.invoke(presence);
-	}
-
-
-
-#include "discord_rpc.h"
 	
 	class component final : public component_interface
 	{
@@ -160,36 +118,19 @@ namespace discord
 		void post_unpack() override
 		{
 			discord = stock::Cvar_Get("discord", "0", stock::CVAR_ARCHIVE);
-
-
-
-
-
-			hook_test.create(Discord_UpdatePresence, stub_test);
-
-
-
-
-
-
-
-
-
+			
 			DiscordEventHandlers handlers{};
 			handlers.ready = ready;
 #ifdef DEBUG
 			handlers.errored = errored;
 #endif
 			handlers.disconnected = disconnected;
-
-			handlers.joinGame = join_game;
-			handlers.joinRequest = join_request;
 			
 			Discord_Initialize("1343751922112532480", &handlers, 1, nullptr);
 			this->initialized = true;
 			
-			scheduler::loop(Discord_RunCallbacks, scheduler::client);//async, 1s);
-			scheduler::loop(updateInfo, scheduler::client);//::async, 2s);
+			scheduler::loop(Discord_RunCallbacks, scheduler::async, 1s);
+			scheduler::loop(updateInfo, scheduler::async, 2s);
 		}
 
 		void pre_destroy() override
