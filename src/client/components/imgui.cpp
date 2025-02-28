@@ -313,7 +313,7 @@ namespace imgui
 		}
 	}
 	
-	static BOOL WINAPI SwapBuffers_stub(HDC hdc)
+	static BOOL WINAPI stub_SwapBuffers(HDC hdc)
 	{
 		if (!initialized)
 		{
@@ -349,7 +349,7 @@ namespace imgui
 		{
 			if (function == "SwapBuffers")
 			{
-				return SwapBuffers_stub;
+				return stub_SwapBuffers;
 			}
 			return nullptr;
 		}

@@ -23,7 +23,7 @@ namespace view
 		return fov;
 	}
 	
-	static __declspec(naked) void CG_CalcFov_return_stub()
+	static __declspec(naked) void stub_CG_CalcFov_return()
 	{
 		__asm
 		{
@@ -93,7 +93,7 @@ namespace view
 
 		void post_cgame() override
 		{
-			utils::hook::jump(ABSOLUTE_CGAME_MP(0x30032f2a), CG_CalcFov_return_stub);
+			utils::hook::jump(ABSOLUTE_CGAME_MP(0x30032f2a), stub_CG_CalcFov_return);
 			
 			hook_CG_Respawn.create(ABSOLUTE_CGAME_MP(0x30028a70), stub_CG_Respawn);
 

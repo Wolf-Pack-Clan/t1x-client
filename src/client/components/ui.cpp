@@ -8,20 +8,20 @@ namespace ui
 	stock::cvar_t* cg_drawDisconnect;
 	stock::cvar_t* cg_drawWeaponSelect;
 
-	utils::hook::detour CG_DrawWeaponSelect_hook;
+	utils::hook::detour hook_CG_DrawWeaponSelect;
 		
-	static void CG_DrawDisconnect_stub()
+	static void stub_CG_DrawDisconnect()
 	{
 		if (!cg_drawDisconnect->integer)
 			return;
 		utils::hook::invoke<void>(ABSOLUTE_CGAME_MP(0x30015450));
 	}
 
-	static void CG_DrawWeaponSelect_stub()
+	static void stub_CG_DrawWeaponSelect()
 	{
 		if (!cg_drawWeaponSelect->integer)
 			return;
-		CG_DrawWeaponSelect_hook.invoke();
+		hook_CG_DrawWeaponSelect.invoke();
 	}
 
 	static void draw_branding()
@@ -58,10 +58,10 @@ namespace ui
 
 		void post_cgame() override
 		{
-			CG_DrawWeaponSelect_hook.create(ABSOLUTE_CGAME_MP(0x30037790), CG_DrawWeaponSelect_stub);
+			hook_CG_DrawWeaponSelect.create(ABSOLUTE_CGAME_MP(0x30037790), stub_CG_DrawWeaponSelect);
 
-			utils::hook::jump(ABSOLUTE_CGAME_MP(0x300159CC), CG_DrawDisconnect_stub);
-			utils::hook::jump(ABSOLUTE_CGAME_MP(0x300159D4), CG_DrawDisconnect_stub);
+			utils::hook::jump(ABSOLUTE_CGAME_MP(0x300159CC), stub_CG_DrawDisconnect);
+			utils::hook::jump(ABSOLUTE_CGAME_MP(0x300159D4), stub_CG_DrawDisconnect);
 		}
 	};
 }

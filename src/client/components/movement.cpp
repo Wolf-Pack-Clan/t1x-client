@@ -67,7 +67,7 @@ namespace movement
 		}
 	}
 	
-	static __declspec(naked) void cg_zoomSensitivity_calculation_stub()
+	static __declspec(naked) void stub_cg_zoomSensitivity_calculation()
 	{
 		__asm
 		{
@@ -93,7 +93,7 @@ namespace movement
 
 		void post_cgame() override
 		{
-			utils::hook::jump(ABSOLUTE_CGAME_MP(0x30032fe8), cg_zoomSensitivity_calculation_stub);
+			utils::hook::jump(ABSOLUTE_CGAME_MP(0x30032fe8), stub_cg_zoomSensitivity_calculation);
 		}
 	};
 }

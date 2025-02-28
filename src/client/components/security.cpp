@@ -37,7 +37,7 @@ namespace security
 			auto cvar_name = stock::Cmd_Argv(1);
 #if 0
 			std::stringstream ss;
-			ss << "####### CG_ServerCommand_stub: " << cvar_name << std::endl;
+			ss << "####### stub_CG_ServerCommand: " << cvar_name << std::endl;
 			OutputDebugString(ss.str().c_str());
 #endif
 
@@ -51,7 +51,7 @@ namespace security
 	{
 #if 0
 		std::stringstream ss;
-		ss << "####### CL_SystemInfoChanged_Cvar_Set_stub: " << name << std::endl;
+		ss << "####### stub_CL_SystemInfoChanged_Cvar_Set: " << name << std::endl;
 		OutputDebugString(ss.str().c_str());
 #endif
 
