@@ -17,7 +17,7 @@ namespace stock
 	WEAK adjuster<void(int code, const char* fmt, ...)> Com_Error{ 0x00435ad0 };
 	WEAK adjuster<void(cbufExec_t exec_when, const char* text)> Cbuf_ExecuteText{ 0x00428290 };
 	WEAK adjuster<const char*(netadr_t a)> NET_AdrToString{ 0x00449150 };
-
+	WEAK adjuster<qboolean(netadr_t a, netadr_t b)> NET_CompareAdr{ 0x00449230 };
 
 
 

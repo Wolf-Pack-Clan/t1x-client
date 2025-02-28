@@ -108,21 +108,6 @@ namespace stock
 
 
 
-
-
-	/*typedef enum
-	{
-		PM_NORMAL = 0,
-		PM_NORMAL_LINKED = 1,
-		PM_NOCLIP = 2,
-		PM_UFO = 3,
-		PM_SPECTATOR = 4,
-		PM_INTERMISSION = 5,
-		PM_DEAD = 6,
-		PM_DEAD_LINKED = 7
-	} pmtype_t;*/
-
-
 	/*typedef struct
 	{
 		float x;

@@ -7,8 +7,8 @@
 namespace security
 {
 	stock::cvar_t* cl_allowDownload;
-	utils::hook::detour CG_ServerCommand_hook;
-	utils::hook::detour CL_SystemInfoChanged_hook;
+	utils::hook::detour hook_CG_ServerCommand;
+	utils::hook::detour hook_CL_NextDownload;
 	
 	std::vector<std::string> cvarsWritable_whiteList =
 	{
@@ -29,7 +29,7 @@ namespace security
 		return false;
 	}
 
-	static void CG_ServerCommand_stub()
+	static void stub_CG_ServerCommand()
 	{
 		auto cmd = stock::Cmd_Argv(0);
 		if (*cmd == 'v')
@@ -44,14 +44,14 @@ namespace security
 			if (!cvarIsInWhitelist(cvar_name))
 				return;
 		}
-		CG_ServerCommand_hook.invoke();
+		hook_CG_ServerCommand.invoke();
 	}
 
-	static void CL_SystemInfoChanged_Cvar_Set_stub(const char* name, const char* value)
+	static void stub_CL_SystemInfoChanged_Cvar_Set(const char* name, const char* value)
 	{
 #if 0
 		std::stringstream ss;
-		ss << "####### CL_SystemInfoChanged_Cvar_Set_stub: " << name << "\n";
+		ss << "####### CL_SystemInfoChanged_Cvar_Set_stub: " << name << std::endl;
 		OutputDebugString(ss.str().c_str());
 #endif
 
@@ -60,26 +60,25 @@ namespace security
 		stock::Cvar_Set(name, value);
 	}
 
-	static void CL_SystemInfoChanged_stub()
+	static void stub_CL_NextDownload()
 	{
-		char* cl_gameState_stringData = (char*)0x01436a7c;
-		int* cl_gameState_stringOffsets = (int*)0x1434A7C;
-		char* systemInfo = cl_gameState_stringData + cl_gameState_stringOffsets[stock::CS_SYSTEMINFO];
-		const char* sv_pakNames = stock::Info_ValueForKey(systemInfo, "sv_pakNames");
-		const char* sv_referencedPakNames = stock::Info_ValueForKey(systemInfo, "sv_referencedPakNames");
-		
-		if (strstr(sv_pakNames, "@") || strstr(sv_referencedPakNames, "@"))
+		if (!stock::NET_CompareAdr(*stock::cls_autoupdateServer, *stock::clc_serverAddress))
 		{
-			//stock::Cbuf_ExecuteText(stock::EXEC_APPEND, "disconnect\n");
-			//stock::CL_Disconnect_f();
-			//window::MSG("Non-pk3 download protection triggered", MB_ICONEXCLAMATION);
-			//return;
+			char* cl_gameState_stringData = (char*)0x01436a7c;
+			int* cl_gameState_stringOffsets = (int*)0x1434A7C;
+			char* systemInfo = cl_gameState_stringData + cl_gameState_stringOffsets[stock::CS_SYSTEMINFO];
+			
+			const char* sv_pakNames = stock::Info_ValueForKey(systemInfo, "sv_pakNames");
+			const char* sv_referencedPakNames = stock::Info_ValueForKey(systemInfo, "sv_referencedPakNames");
 
-			// TODO: Don't display "error"
-			stock::Com_Error(stock::ERR_DROP, "Non-pk3 download protection triggered");
+			if (strstr(sv_pakNames, "@") || strstr(sv_referencedPakNames, "@"))
+			{
+				stock::Cbuf_ExecuteText(stock::EXEC_APPEND, "disconnect\n");
+				window::MSG("Non-pk3 download protection triggered", MB_ICONWARNING);
+			}
 		}
 
-		CL_SystemInfoChanged_hook.invoke();
+		hook_CL_NextDownload.invoke();
 	}
 
 	bool escape_aborted_connection()
@@ -98,16 +97,16 @@ namespace security
 		void post_unpack() override
 		{
 			// Use a cvar whitelist for CL_SystemInfoChanged
-			utils::hook::call(0x00415ffe, CL_SystemInfoChanged_Cvar_Set_stub);
+			utils::hook::call(0x00415ffe, stub_CL_SystemInfoChanged_Cvar_Set);
 			
 			// Check in sv_pakNames and sv_referencedPakNames for an indicator of a non-pk3 file incoming download
-			CL_SystemInfoChanged_hook.create(0x00415eb0, CL_SystemInfoChanged_stub);
+			hook_CL_NextDownload.create(0x00410190, stub_CL_NextDownload);
 		}
 
 		void post_cgame() override
 		{
 			// Use a cvar whitelist for setClientCvar GSC method
-			CG_ServerCommand_hook.create(ABSOLUTE_CGAME_MP(0x3002e0d0), CG_ServerCommand_stub);
+			hook_CG_ServerCommand.create(ABSOLUTE_CGAME_MP(0x3002e0d0), stub_CG_ServerCommand);
 		}
 	};
 }
