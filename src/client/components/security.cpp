@@ -19,13 +19,6 @@ namespace security
 		"sv_cheats",
 		"sv_serverid",
 		"timescale",
-
-		/*
-		These 2 are written by default, preventing writing doesn't seem to be a problem
-		But there is a crash in FS_ReturnPath sometimes, so now allowing to see if the crash never occurs again
-		*/
-		"sv_referencedPakNames",
-		"sv_referencedPaks",
 	};
 
 	static bool cvarIsInWhitelist(const char* cvar_name)

@@ -37,7 +37,6 @@ namespace discord
 		OutputDebugString(ss.str().c_str());
 #endif
 		isReady = false;
-		init_timestamp = -1;
 	}
 	
 	void updateInfo()
@@ -46,17 +45,10 @@ namespace discord
 		{
 			if (init_timestamp != -1)
 			{
-				init_timestamp = -1;
+				// Was enabled
 				Discord_ClearPresence();
 			}
 			return;
-		}
-
-		if (init_timestamp == -1 && isReady)
-		{
-			init_timestamp = std::time(nullptr);
-			presence.startTimestamp = init_timestamp;
-			Discord_UpdatePresence(&presence);
 		}
 		
 		if (*stock::cls_state == stock::CA_ACTIVE && !*stock::clc_demoplaying)
@@ -92,9 +84,23 @@ namespace discord
 		{
 			if (presence.details != nullptr || presence.state != nullptr)
 			{
+				// Not in server anymore, reset info
 				presence = {};
 				presence.startTimestamp = init_timestamp;
 				Discord_UpdatePresence(&presence);
+			}
+			else
+			{
+				if (isReady)
+				{
+					if (init_timestamp == -1)
+					{
+						// First update
+						init_timestamp = std::time(nullptr);
+						presence.startTimestamp = init_timestamp;
+					}
+					Discord_UpdatePresence(&presence);
+				}
 			}
 		}
 	}
