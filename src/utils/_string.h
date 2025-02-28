@@ -3,6 +3,9 @@
 #include "nt.h"
 #include "memory.h"
 
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
 template <class Type, size_t n>
 constexpr auto ARRAY_COUNT(Type(&)[n]) { return n; }
 
@@ -84,4 +87,6 @@ namespace utils::string
 
 	std::string convert(const std::wstring& wstr);
 	std::wstring convert(const std::string& str);
+
+	bool isValidIPPort(const std::string& ipPort);
 }

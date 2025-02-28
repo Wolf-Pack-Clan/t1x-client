@@ -86,8 +86,19 @@ namespace stock
 		char* adsOverlayShader;	// 0x224
 		// ...
 	} weaponInfo_t;
-
 	
+	typedef enum
+	{
+		// ...
+	} netadrtype_t;
+	
+	typedef struct
+	{
+		netadrtype_t type;
+		byte ip[4];
+		byte ipx[10];
+		unsigned short port;
+	} netadr_t;
 
 
 

@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <atlbase.h>
 #include <dbghelp.h>
+#include <TlHelp32.h>
 
 // min and max is required by gdi, therefore NOMINMAX won't work
 #ifdef max

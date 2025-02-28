@@ -34,6 +34,10 @@ namespace stock
 	WEAK adjuster<connstate_t> cls_state{ 0x155F2C0 };
 	WEAK adjuster<qboolean> clc_demorecording{ 0x015ef000 };
 	WEAK adjuster<cvar_t[]> cvar_indexes{ 0x0163b420 };
+	WEAK adjuster<netadr_t> clc_serverAddress{ 0x015ce86c };
+
+
+
 
 
 

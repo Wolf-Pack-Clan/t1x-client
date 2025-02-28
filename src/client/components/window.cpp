@@ -10,6 +10,7 @@ namespace window
 	int rawinput_y_current = 0;
 	int rawinput_x_old = 0;
 	int rawinput_y_old = 0;
+	char sys_cmdline[stock::MAX_STRING_CHARS];
 	HHOOK hHook;
 
 	utils::hook::detour hook_Com_Init;
@@ -182,6 +183,16 @@ namespace window
 			break;
 		case WM_MENUCHAR:
 			return MNC_CLOSE << 16; // Prevent Alt+Enter beep sound
+		/*case WM_COPYDATA:
+			MessageBox(NULL, "WM_COPYDATA", "", NULL);
+			COPYDATASTRUCT* cds = (COPYDATASTRUCT*)lParam;
+			if (cds->dwData == ID_MSG_CONNECT)
+			{
+				std::string command = std::string("connect ") + (char*)cds->lpData + "\n";
+				stock::Cbuf_ExecuteText(stock::EXEC_APPEND, command.c_str());
+				return TRUE;
+			}
+			break;*/
 		}
 
 		// See https://github.com/kartjom/CoDPlusPlus/blob/359539f889958b2cbd58884cbc5bb0e3e5a3c294/CoDPlusPlus/src/Utils/WinApiHelper.cpp#L210
@@ -206,13 +217,13 @@ namespace window
 		return stock::MainWndProc(hWnd, uMsg, wParam, lParam);
 	}
 	
-	static void stub_Com_Init(char* commandLine)
+	static void stub_Com_Init(char*)
 	{
 		hHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, NULL, 0);
 		if (!hHook)
 			throw std::runtime_error(utils::string::va("SetWindowsHookEx for LowLevelKeyboardProc failed"));
 		
-		hook_Com_Init.invoke(commandLine);
+		hook_Com_Init.invoke(sys_cmdline);
 	}
 	
 	class component final : public component_interface

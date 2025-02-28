@@ -1,5 +1,7 @@
 #include "_string.h"
 
+#pragma comment(lib, "ws2_32.lib")
+
 namespace utils::string
 {
 	const char* va(const char* fmt, ...)
@@ -73,5 +75,32 @@ namespace utils::string
 		}
 
 		return result;
+	}
+	
+	static bool isValidIP(const std::string& ip)
+	{
+		struct sockaddr_in sa;
+		return inet_pton(AF_INET, ip.c_str(), &(sa.sin_addr)) == 1;
+	}
+	static bool isValidPort(const std::string& portStr)
+	{
+		try
+		{
+			return std::stoi(portStr) >= 0 && std::stoi(portStr) <= 65535;
+		}
+		catch (...)
+		{
+			return false;
+		}
+	}
+	bool isValidIPPort(const std::string& ipPort)
+	{
+		std::stringstream ss(ipPort);
+		std::string ip;
+		std::string port;
+    
+		if (std::getline(ss, ip, ':') && std::getline(ss, port))
+			return isValidIP(ip) && isValidPort(port);
+		return false;
 	}
 }

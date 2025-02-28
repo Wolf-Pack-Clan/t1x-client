@@ -81,25 +81,12 @@ namespace discord
 			presence.details = sv_hostname.c_str();
 			std::string state = mapname + " | " + std::to_string(numPlayers) + " (" + sv_maxclients + ")" + " | " + g_gametype;
 			presence.state = state.c_str();
-
-
-
-
-
-			presence.buttonLabel[0] = "test1";
-			presence.buttonUrl[0] = "https://google.com";
-
-
-			presence.buttonLabel[1] = "test2";
-			presence.buttonUrl[1] = "https://youtube.com";
-
-
-
-
-
-
+			
+			presence.buttonLabel[0] = "Join";
+			std::string url = std::string("iw1x://") + stock::NET_AdrToString(*stock::clc_serverAddress);
+			presence.buttonUrl[0] = url.c_str();
+			
 			Discord_UpdatePresence(&presence);
-
 		}
 		else
 		{
