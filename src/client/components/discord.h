@@ -8,6 +8,7 @@
 #include "loader/component_loader.h"
 
 #include "scheduler.h"
+#include "window.h"
 
 #include "discord_rpc.h"
 

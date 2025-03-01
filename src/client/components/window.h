@@ -1,3 +1,5 @@
+#pragma once
+
 #include "shared.h"
 
 #include "hook.h"
@@ -14,7 +16,6 @@
 
 namespace window
 {
-	//constexpr auto ID_MSG_CONNECT = 1;
 	extern char sys_cmdline[stock::MAX_STRING_CHARS];
 
 	void MSG(const std::string& text, UINT flags = MB_OK);

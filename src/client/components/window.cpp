@@ -18,7 +18,7 @@ namespace window
 
 	void MSG(const std::string& text, UINT flags)
 	{
-		scheduler::once([text, flags]() { MessageBoxA(*stock::hWnd, text.c_str(), MOD_NAME, flags); }, scheduler::async);
+		scheduler::once([text, flags]() { MessageBox(*stock::hWnd, text.c_str(), MOD_NAME, flags); }, scheduler::async);
 	}
 
 	static LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
@@ -183,16 +183,6 @@ namespace window
 			break;
 		case WM_MENUCHAR:
 			return MNC_CLOSE << 16; // Prevent Alt+Enter beep sound
-		/*case WM_COPYDATA:
-			MessageBox(NULL, "WM_COPYDATA", "", NULL);
-			COPYDATASTRUCT* cds = (COPYDATASTRUCT*)lParam;
-			if (cds->dwData == ID_MSG_CONNECT)
-			{
-				std::string command = std::string("connect ") + (char*)cds->lpData + "\n";
-				stock::Cbuf_ExecuteText(stock::EXEC_APPEND, command.c_str());
-				return TRUE;
-			}
-			break;*/
 		}
 
 		// See https://github.com/kartjom/CoDPlusPlus/blob/359539f889958b2cbd58884cbc5bb0e3e5a3c294/CoDPlusPlus/src/Utils/WinApiHelper.cpp#L210

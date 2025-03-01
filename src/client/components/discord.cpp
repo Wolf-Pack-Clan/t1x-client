@@ -4,10 +4,14 @@
 
 namespace discord
 {
-	DiscordRichPresence presence{};
-	std::time_t init_timestamp = -1;
-	stock::cvar_t* discord;
 	bool isReady = false;
+	bool updatesStarted = false;
+	bool exiting = false;
+	std::time_t timestamp_init = -1;
+	std::thread thread_checkForJoinRequest;
+	HANDLE hPipe;
+	stock::cvar_t* discord;
+	DiscordRichPresence presence{};
 
 	static void ready(const DiscordUser*)
 	{
@@ -39,16 +43,60 @@ namespace discord
 		isReady = false;
 	}
 	
+	static void checkForJoinRequest()
+	{
+		while(true)
+		{
+			BOOL connected = ConnectNamedPipe(hPipe, NULL) || GetLastError() == ERROR_PIPE_CONNECTED;
+
+			if (exiting)
+				return;
+
+			if (connected)
+			{
+				//MessageBox(NULL, "connected", "", NULL);
+				DWORD bytesRead;
+				char buffer[512]{};
+				BOOL success = ReadFile(hPipe, buffer, sizeof(buffer) - 1, &bytesRead, NULL);
+				if (success)
+				{
+					//MessageBox(NULL, "success", "", NULL);
+					buffer[bytesRead] = '\0';
+					std::string command = std::string("connect ") + buffer + "\n";
+					stock::Cbuf_ExecuteText(stock::EXEC_APPEND, command.c_str());
+				}
+				else
+					MessageBox(NULL, "Failed to read from pipe for Discord", "", NULL);
+				DisconnectNamedPipe(hPipe);
+			}
+			else
+				MessageBox(NULL, "Failed to connect pipe for Discord", "", NULL);
+		}
+	}
+	
 	void updateInfo()
 	{
 		if (!discord->integer)
 		{
-			if (init_timestamp != -1)
+			if (updatesStarted)
 			{
 				// Was enabled
 				Discord_ClearPresence();
+				updatesStarted = false;
 			}
 			return;
+		}
+		else
+		{
+			if (!isReady)
+				return;
+			
+			if (!updatesStarted)
+			{
+				// First update
+				Discord_UpdatePresence(&presence);
+				updatesStarted = true;
+			}
 		}
 		
 		if (*stock::cls_state == stock::CA_ACTIVE && !*stock::clc_demoplaying)
@@ -84,23 +132,10 @@ namespace discord
 		{
 			if (presence.details != nullptr || presence.state != nullptr)
 			{
-				// Not in server anymore, reset info
+				// Was in a server, reset info
 				presence = {};
-				presence.startTimestamp = init_timestamp;
+				presence.startTimestamp = timestamp_init;
 				Discord_UpdatePresence(&presence);
-			}
-			else
-			{
-				if (isReady)
-				{
-					if (init_timestamp == -1)
-					{
-						// First update
-						init_timestamp = std::time(nullptr);
-						presence.startTimestamp = init_timestamp;
-					}
-					Discord_UpdatePresence(&presence);
-				}
 			}
 		}
 	}
@@ -122,14 +157,35 @@ namespace discord
 			Discord_Initialize("1343751922112532480", &handlers, 1, nullptr);
 			this->initialized = true;
 			
-			scheduler::loop(Discord_RunCallbacks, scheduler::async, 1s);
-			scheduler::loop(updateInfo, scheduler::async, 2s);
+			timestamp_init = std::time(nullptr);
+			presence.startTimestamp = timestamp_init;
+			
+			scheduler::loop(Discord_RunCallbacks, scheduler::client);
+			scheduler::loop(updateInfo, scheduler::client);
+			
+			hPipe = CreateNamedPipe(
+				"\\\\.\\pipe\\iw1x",
+				PIPE_ACCESS_INBOUND,
+				PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
+				1, // nMaxInstances
+				512, 512, 0, NULL
+			);
+			if (hPipe == INVALID_HANDLE_VALUE)
+				window::MSG("Failed to create pipe for Discord", MB_ICONERROR | MB_SETFOREGROUND);
+			else
+				thread_checkForJoinRequest = utils::thread::create_named_thread("checkForJoinRequest", checkForJoinRequest);
 		}
 
 		void pre_destroy() override
 		{
 			if (this->initialized)
 				Discord_Shutdown();
+			
+			exiting = true;
+			CancelIoEx(hPipe, NULL);
+			CloseHandle(hPipe);
+			if (thread_checkForJoinRequest.joinable())
+				thread_checkForJoinRequest.join();
 		}
 
 	private:

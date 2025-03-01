@@ -15,6 +15,11 @@ DWORD address_ui_mp;
 utils::hook::detour hook_GetModuleFileNameW;
 utils::hook::detour hook_GetModuleFileNameA;
 
+static void MSG_ERR(const char* msg)
+{
+    MessageBox(NULL, msg, MOD_NAME, MB_ICONERROR | MB_SETFOREGROUND);
+}
+
 static LONG WINAPI CrashLogger(EXCEPTION_POINTERS* exceptionPointers)
 {
     std::string crashFilename = "iw1x_crash.log";
@@ -38,7 +43,7 @@ static LONG WINAPI CrashLogger(EXCEPTION_POINTERS* exceptionPointers)
 
         std::string errorMessage = "A crash occured, please send your " + crashFilename + " file in the Discord server.";
 
-        MessageBoxA(NULL, errorMessage.c_str(), MOD_NAME, MB_ICONERROR | MB_SETFOREGROUND);
+        MSG_ERR(errorMessage.c_str());
     }
     return EXCEPTION_EXECUTE_HANDLER;
 }
@@ -224,53 +229,6 @@ static FARPROC load_binary()
     return loader.load(self, data);
 }
 
-
-
-
-
-
-
-
-
-DWORD getAlreadyRunningInstance()
-{
-    HANDLE hProcList = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-    if (hProcList == INVALID_HANDLE_VALUE)
-        return NULL;
-
-    PROCESSENTRY32 procEntry;
-    procEntry.dwSize = sizeof(procEntry);
-
-    if (Process32First(hProcList, &procEntry))
-    {
-        while (Process32Next(hProcList, &procEntry))
-        {
-            if (!strcmp(procEntry.szExeFile, "iw1x.exe"))
-            {
-                DWORD dwPID = procEntry.th32ProcessID;
-                CloseHandle(hProcList);
-                return dwPID;
-            }
-        }
-    }
-    return NULL;
-}
-
-// TODO: Don't create a function for this, if possible
-HWND foundHwnd = nullptr;
-BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
-{
-    DWORD currentPid;
-    GetWindowThreadProcessId(hwnd, &currentPid);
-    
-    if (currentPid == static_cast<DWORD>(lParam))
-    {
-        foundHwnd = hwnd;
-        return FALSE;
-    }
-    return TRUE;
-}
-
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In_ int)
 {
 #if 0
@@ -290,7 +248,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In
 #endif
     
     if (!registerURLProtocol())
-        MessageBoxA(NULL, "registerURLProtocol failed", MOD_NAME, MB_ICONERROR | MB_SETFOREGROUND);
+        MSG_ERR("registerURLProtocol failed");
 
     enable_dpi_awareness();
     
@@ -307,38 +265,40 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In
         if (cmdLine.back() == '"') cmdLine.pop_back();
         if (cmdLine.back() == '/') cmdLine.pop_back();
         if (cmdLine.find(prefix) == 0) cmdLine.erase(0, prefix.length());
-        //MessageBoxA(NULL, cmdLine.c_str(), "", NULL);
+        //MessageBox(NULL, cmdLine.c_str(), "", NULL);
         
         if (utils::string::isValidIPPort(cmdLine))
         {
-            // Check if an instance is already running
-            //auto runningInstance = getAlreadyRunningInstance();
-            //if (runningInstance != NULL)
-            //{
-                /*MessageBox(NULL, "runningInstance", "", NULL);
+            if (OpenMutexA(SYNCHRONIZE, FALSE, MOD_NAME) != NULL)
+            {
+                // An instance is already running
+                //MessageBox(NULL, "already running", "", NULL);
+                HANDLE hPipe = CreateFile(
+                    "\\\\.\\pipe\\iw1x",
+                    GENERIC_WRITE,
+                    0,
+                    NULL,
+                    OPEN_EXISTING,
+                    0,
+                    NULL);
                 
-                EnumWindows(EnumWindowsProc, static_cast<LPARAM>(runningInstance));
-                if (foundHwnd == nullptr)
+                if (hPipe == INVALID_HANDLE_VALUE)
                 {
-                    MessageBox(NULL, "Couldn't find window of running instance", MOD_NAME, MB_ICONERROR | MB_SETFOREGROUND);
+                    MSG_ERR("Failed to connect to pipe");
                     return 1;
                 }
-
-
-                //SetForegroundWindow(foundHwnd);
-
-
-                COPYDATASTRUCT cds;
-                cds.dwData = window::ID_MSG_CONNECT;
-                cds.cbData = strlen(cmdLine.c_str()) + 1;
-                cds.lpData = (void*)cmdLine.c_str();
-                SendMessage(foundHwnd, WM_COPYDATA, NULL, (LPARAM)&cds);*/
-
                 
-                //return 0;
-            /*}
+                DWORD bytesWritten;
+                BOOL success = WriteFile(hPipe, cmdLine.c_str(), (DWORD)strlen(cmdLine.c_str()), &bytesWritten, NULL);
+                if (!success)
+                    MSG_ERR("Failed to write to pipe for Discord");
+                //else
+                    //MessageBox(NULL, "success write to pipe", "", NULL);
+                CloseHandle(hPipe);
+                return 0;
+            }
             else
-            {*/
+            {
                 // Save the arg in the window component for stub_Com_Init
                 std::string arg = "+connect " + cmdLine;
                 strncpy_s(window::sys_cmdline, arg.c_str(), sizeof(window::sys_cmdline));
@@ -348,8 +308,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In
                 GetModuleFileName(NULL, moduleFilename, sizeof(moduleFilename));
                 std::filesystem::path path(moduleFilename);
                 SetCurrentDirectory(path.parent_path().string().c_str());
-                //MessageBoxA(NULL, path.parent_path().string().c_str(), "", NULL);
-            //}
+                //MessageBox(NULL, path.parent_path().string().c_str(), "", NULL);
+            }
+        }
+        else
+        {
+            MSG_ERR("Failed to parse connect URL");
+            return 1;
         }
     }
     
@@ -375,9 +340,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In
     }
     catch (std::exception& ex)
     {
-        MessageBoxA(NULL, ex.what(), MOD_NAME, MB_ICONERROR | MB_SETFOREGROUND);
+        MSG_ERR(ex.what());
         return 1;
     }
-
+    
+    CreateMutexA(NULL, TRUE, MOD_NAME);
     return static_cast<int>(entry_point());
 }
