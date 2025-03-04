@@ -10,10 +10,12 @@ namespace stock
 	constexpr auto KEYCATCH_CGAME = 0x0008;
 	constexpr auto EF_MG42_ACTIVE = 0xc000;
 	constexpr auto YAW = 1;
+	constexpr auto FPS_FRAMES = 32;
 	
 	namespace cgame_mp
 	{
 		WEAK adjuster<cvarTable_t> cvarTable{ 0x300749A0, BASE_CGAME_MP };
+		WEAK adjuster<int (*)(int arg, ...)> syscall{ 0x30074898, BASE_CGAME_MP };
 	}
 
 	WEAK adjuster<int> cls_keyCatchers{ 0x0155f2c4 };

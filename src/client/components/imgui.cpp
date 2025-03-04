@@ -10,6 +10,7 @@ namespace imgui
 	bool initialized = false;
 	bool displayed = false;
 	bool waitForMenuKeyRelease = false;
+	float indentation_checkbox_child = 12.f;
 
 	HGLRC imguiWglContext;
 	HWND hWnd_during_init;
@@ -18,9 +19,10 @@ namespace imgui
 	float sensitivity_adsScale = 0.f;
 	bool sensitivity_adsScaleSniperEnable = false;
 	float sensitivity_adsScaleSniper = 0.f;
-	bool cg_drawDisconnect = true;
-	bool cg_drawWeaponSelect = true;
+	bool cg_drawDisconnect = false;
+	bool cg_drawWeaponSelect = false;
 	bool cg_drawFPS = false;
+	bool cg_drawFPS_custom = false;
 	int cg_chatHeight = 0;
 	int con_boldgamemessagetime = 0;
 	bool cg_lagometer = false;
@@ -31,7 +33,8 @@ namespace imgui
 	float cg_fovScale = 0.f;
 	bool record_respawn = false;
 	float com_timescale = 0.f;
-	bool discord = false;
+	bool discord = false;	
+	bool branding = false;
 
 	static void _toggle_menu()
 	{
@@ -110,6 +113,8 @@ namespace imgui
 		record_respawn = view::record_respawn->integer;
 		com_timescale = cvars::com_timescale->value;
 		discord = discord::discord->integer;
+		branding = ui::branding->integer;
+		cg_drawFPS_custom = ui::cg_drawFPS_custom->integer;
 
 		if (*stock::cgvm != NULL)
 		{
@@ -164,6 +169,9 @@ namespace imgui
 			if (*stock::cgvm == NULL) ImGui::BeginDisabled();
 			ImGui::Checkbox("FPS counter", &cg_drawFPS);
 			if (*stock::cgvm == NULL) ImGui::EndDisabled();
+			ImGui::Indent(indentation_checkbox_child);
+			ImGui::Checkbox("Custom", &cg_drawFPS_custom);
+			ImGui::Unindent(indentation_checkbox_child);
 
 			if (*stock::cgvm == NULL || cvars::com_sv_running->integer) ImGui::BeginDisabled();
 			ImGui::Checkbox("Lagometer", &cg_lagometer);
@@ -185,6 +193,10 @@ namespace imgui
 			ImGui::Text("Middle messages seconds");
 			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			ImGui::SliderInt("##slider_con_boldgamemessagetime", &con_boldgamemessagetime, 0, 8, "%i", ImGuiSliderFlags_NoInput);
+
+			ImGui::Spacing();
+
+			ImGui::Checkbox("Branding", &branding);
 
 		ENDTABITEM_SPACED()
 	}
@@ -274,6 +286,8 @@ namespace imgui
 		stock::Cvar_Set(view::record_respawn->name, record_respawn ? "1" : "0");
 		stock::Cvar_Set(cvars::com_timescale->name, utils::string::va("%.1f", com_timescale));
 		stock::Cvar_Set(discord::discord->name, discord ? "1" : "0");
+		stock::Cvar_Set(ui::cg_drawFPS_custom->name, cg_drawFPS_custom ? "1" : "0");
+		stock::Cvar_Set(ui::branding->name, branding ? "1" : "0");
 		
 		if (*stock::cgvm != NULL)
 		{
@@ -283,7 +297,7 @@ namespace imgui
 			*/
 			cv = reinterpret_cast<stock::cvar_t*>(reinterpret_cast<uintptr_t>(*stock::cvar_indexes) + (0x2c * cvars::vm::cg_fov->handle));
 			stock::Cvar_Set(cv->name, utils::string::va("%.2f", cg_fov));
-
+			
 			cv = reinterpret_cast<stock::cvar_t*>(reinterpret_cast<uintptr_t>(*stock::cvar_indexes) + (0x2c * cvars::vm::cg_drawFPS->handle));
 			stock::Cvar_Set(cv->name, utils::string::va("%i", cg_drawFPS));
 
