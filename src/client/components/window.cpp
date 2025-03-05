@@ -15,6 +15,8 @@ namespace window
 
 	utils::hook::detour hook_Com_Init;
 	utils::hook::detour hook_IN_MouseMove;
+	utils::hook::detour hook_SV_Startup;
+	utils::hook::detour hook_SV_Shutdown;
 
 	void MSG(const std::string& text, UINT flags)
 	{
@@ -162,7 +164,7 @@ namespace window
 			WM_INPUT_process(lParam);
 			return true;
 		case WM_CREATE:
-			SetWindowLong(hWnd, GWL_STYLE, GetWindowLong(hWnd, GWL_STYLE) | WS_MINIMIZEBOX); // Add minimize button and Win+M support
+			SetWindowLong(hWnd, GWL_STYLE, GetWindowLong(hWnd, GWL_STYLE) | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
 			rawInput_init(hWnd);
 			break;
 		case WM_CHAR:
@@ -183,6 +185,14 @@ namespace window
 			break;
 		case WM_MENUCHAR:
 			return MNC_CLOSE << 16; // Prevent Alt+Enter beep sound
+		case WM_SYSCOMMAND:
+			if (wParam == SC_MAXIMIZE)
+			{
+				stock::Cvar_Set(cvars::r_fullscreen->name, "1");
+				stock::Cbuf_ExecuteText(stock::EXEC_APPEND, "vid_restart\n");
+				return 0;
+			}
+			break;
 		}
 
 		// See https://github.com/kartjom/CoDPlusPlus/blob/359539f889958b2cbd58884cbc5bb0e3e5a3c294/CoDPlusPlus/src/Utils/WinApiHelper.cpp#L210
@@ -216,6 +226,24 @@ namespace window
 		hook_Com_Init.invoke(sys_cmdline);
 	}
 	
+	static void stub_SV_Startup()
+	{
+		auto style = GetWindowLong(*stock::hWnd, GWL_STYLE);
+		style &= ~WS_MAXIMIZEBOX;
+		SetWindowLong(*stock::hWnd, GWL_STYLE, style);
+
+		hook_SV_Startup.invoke();
+	}
+
+	static void stub_SV_Shutdown(char *finalmsg)
+	{
+		hook_SV_Shutdown.invoke(finalmsg);
+
+		auto style = GetWindowLong(*stock::hWnd, GWL_STYLE);
+		style |= WS_MAXIMIZEBOX;
+		SetWindowLong(*stock::hWnd, GWL_STYLE, style);
+	}
+	
 	class component final : public component_interface
 	{
 	public:
@@ -226,6 +254,8 @@ namespace window
 			
 			hook_Com_Init.create(0x004375c0, stub_Com_Init);
 			hook_IN_MouseMove.create(0x00461850, stub_IN_MouseMove);
+			hook_SV_Startup.create(0x00458160, stub_SV_Startup);
+			hook_SV_Shutdown.create(0x00459600, stub_SV_Shutdown);
 		}
 	};
 }
