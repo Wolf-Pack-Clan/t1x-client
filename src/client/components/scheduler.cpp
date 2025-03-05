@@ -80,6 +80,7 @@ namespace scheduler
 	utils::hook::detour hook_CL_Frame;
 	utils::hook::detour hook_SV_Frame;
 	utils::hook::detour hook_RE_EndFrame;
+	utils::hook::detour hook_CG_DrawActive;
 		
 	static void execute(const pipeline type)
 	{
@@ -101,6 +102,13 @@ namespace scheduler
 	{
 		execute(pipeline::client);
 		hook_CL_Frame.invoke(msec);
+	}
+	
+	// TODO: Try hook CL_CGameRendering instead
+	static void stub_CG_DrawActive(stock::stereoFrame_t stereoView)
+	{
+		hook_CG_DrawActive.invoke(stereoView);
+		execute(pipeline::cgame);
 	}
 	
 	void schedule(const std::function<bool()>& callback, const pipeline type, const std::chrono::milliseconds delay)
@@ -153,6 +161,11 @@ namespace scheduler
 			hook_CL_Frame.create(0x00411280, stub_CL_Frame);
 			hook_SV_Frame.create(0x0045b1d0, stub_SV_Frame);
 			hook_RE_EndFrame.create(0x004de4b0, stub_RE_EndFrame);
+		}
+		
+		void post_cgame() override
+		{
+			hook_CG_DrawActive.create(ABSOLUTE_CGAME_MP(0x30018940), stub_CG_DrawActive);
 		}
 		
 		void pre_destroy() override

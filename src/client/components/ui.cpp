@@ -8,6 +8,7 @@ namespace ui
 	stock::cvar_t* cg_drawDisconnect;
 	stock::cvar_t* cg_drawWeaponSelect;
 	stock::cvar_t* cg_drawFPS_custom;
+	stock::cvar_t* cg_drawPing;
 
 	utils::hook::detour hook_CG_DrawWeaponSelect;
 	utils::hook::detour hook_CG_DrawFPS;
@@ -98,6 +99,36 @@ namespace ui
 			stock::SCR_DrawString(background_x + 3, background_y + 11, fontID, scale, text_color, text.c_str(), NULL, NULL, NULL);
 		}
 	}
+
+	static void draw_ping()
+	{
+		if (!cg_drawPing->integer)
+			return;
+
+		if (*stock::clc_demoplaying)
+			return;
+		
+		int* clSnap_ping = (int*)0x0143b148; // TODO: Verify and clean
+
+		const auto background_x = 475;
+		const auto background_y = 0;
+		const auto background_width = 85;
+		const auto background_height = 15;
+		float background_color[4] = {0, 0, 0, 0.6f};
+
+		// Draw background
+		(*stock::cgame_mp::syscall)(stock::CG_R_SETCOLOR, background_color);
+		auto shader = (stock::qhandle_t)(*stock::cgame_mp::syscall)(stock::CG_R_REGISTERSHADERNOMIP, "black", 5);			
+		stock::CG_DrawPic(background_x, background_y, background_width, background_height, shader);
+		(*stock::cgame_mp::syscall)(stock::CG_R_SETCOLOR, NULL);
+
+		// Draw text
+		const auto fontID = 1;
+		const auto scale = 0.21f;
+		float text_color[4] = {1, 1, 1, 1};
+		std::string text = utils::string::va("Latency: %i MS", *clSnap_ping);
+		stock::SCR_DrawString(background_x + 3, background_y + 11, fontID, scale, text_color, text.c_str(), NULL, NULL, NULL);
+	}
 	
 	class component final : public component_interface
 	{
@@ -108,11 +139,13 @@ namespace ui
 			cg_drawWeaponSelect = stock::Cvar_Get("cg_drawWeaponSelect", "1", stock::CVAR_ARCHIVE);
 			cg_drawDisconnect = stock::Cvar_Get("cg_drawDisconnect", "1", stock::CVAR_ARCHIVE);
 			cg_drawFPS_custom = stock::Cvar_Get("cg_drawFPS_custom", "0", stock::CVAR_ARCHIVE);
+			cg_drawPing = stock::Cvar_Get("cg_drawPing", "0", stock::CVAR_ARCHIVE);
 
 			// Replace "k" by "KB" in SCR_DrawDemoRecording
 			utils::hook::set(0x00416b82 + 1, "RECORDING %s: %iKB");
 
 			scheduler::loop(draw_branding, scheduler::pipeline::renderer);
+			scheduler::loop(draw_ping, scheduler::pipeline::cgame);
 		}
 
 		void post_cgame() override

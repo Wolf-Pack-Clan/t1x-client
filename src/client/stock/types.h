@@ -43,6 +43,11 @@ namespace stock
 		CG_R_REGISTERSHADERNOMIP = 0x58,
 		// ...
 	} cgameImport_t;
+
+	typedef enum
+	{
+		// ...
+	} stereoFrame_t;
 	
 	typedef struct cvar_s
 	{

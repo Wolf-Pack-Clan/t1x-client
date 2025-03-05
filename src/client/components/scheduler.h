@@ -1,5 +1,7 @@
 #pragma once
 
+#include "shared.h"
+
 #include "hook.h"
 #include "concurrency.h"
 #include "thread.h"
@@ -12,6 +14,7 @@ namespace scheduler
 	{
 		client,
 		server,
+		cgame,
 		renderer,
 		async,
 		count

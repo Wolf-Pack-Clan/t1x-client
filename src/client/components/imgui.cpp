@@ -35,6 +35,7 @@ namespace imgui
 	float com_timescale = 0.f;
 	bool discord = false;	
 	bool branding = false;
+	bool cg_drawPing = false;
 
 	static void _toggle_menu()
 	{
@@ -115,6 +116,7 @@ namespace imgui
 		discord = discord::discord->integer;
 		branding = ui::branding->integer;
 		cg_drawFPS_custom = ui::cg_drawFPS_custom->integer;
+		cg_drawPing = ui::cg_drawPing->integer;
 
 		if (*stock::cgvm != NULL)
 		{
@@ -173,6 +175,11 @@ namespace imgui
 			ImGui::Checkbox("Custom", &cg_drawFPS_custom);
 			ImGui::Unindent(indentation_checkbox_child);
 
+			ImGui::Spacing();
+
+			if (*stock::clc_demoplaying) ImGui::BeginDisabled();
+			ImGui::Checkbox("Ping", &cg_drawPing);
+			if (*stock::clc_demoplaying) ImGui::EndDisabled();
 			if (*stock::cgvm == NULL || cvars::com_sv_running->integer) ImGui::BeginDisabled();
 			ImGui::Checkbox("Lagometer", &cg_lagometer);
 			if (*stock::cgvm == NULL || cvars::com_sv_running->integer) ImGui::EndDisabled();
@@ -288,6 +295,7 @@ namespace imgui
 		stock::Cvar_Set(discord::discord->name, discord ? "1" : "0");
 		stock::Cvar_Set(ui::cg_drawFPS_custom->name, cg_drawFPS_custom ? "1" : "0");
 		stock::Cvar_Set(ui::branding->name, branding ? "1" : "0");
+		stock::Cvar_Set(ui::cg_drawPing->name, cg_drawPing ? "1" : "0");
 		
 		if (*stock::cgvm != NULL)
 		{
