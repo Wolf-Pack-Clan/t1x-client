@@ -105,6 +105,8 @@ namespace stock
 	typedef enum
 	{
 		// ...
+		NA_LOOPBACK = 2,
+		// ...
 	} netadrtype_t;
 	
 	typedef struct

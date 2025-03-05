@@ -121,10 +121,16 @@ namespace discord
 			presence.details = sv_hostname.c_str();
 			std::string state = mapname + " | " + std::to_string(numPlayers) + " (" + sv_maxclients + ")" + " | " + g_gametype;
 			presence.state = state.c_str();
-			
-			presence.buttonLabel[0] = "Join";
+
+			/*
+			FIXME: Have to create the URL before checking the type, or Discord will fail saying: "url" must be a valid uri
+			*/
 			std::string url = std::string("iw1x://") + stock::NET_AdrToString(*stock::clc_serverAddress);
-			presence.buttonUrl[0] = url.c_str();
+			if (stock::clc_serverAddress->type != stock::NA_LOOPBACK)
+			{
+				presence.buttonLabel[0] = "Join";
+				presence.buttonUrl[0] = url.c_str();
+			}
 			
 			Discord_UpdatePresence(&presence);
 		}
