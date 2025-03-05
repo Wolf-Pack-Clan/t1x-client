@@ -243,6 +243,11 @@ namespace window
 		style |= WS_MAXIMIZEBOX;
 		SetWindowLong(*stock::hWnd, GWL_STYLE, style);
 	}
+
+	static void Cmd_Minimize()
+	{
+		ShowWindow(*stock::hWnd, SW_MINIMIZE);
+	}
 	
 	class component final : public component_interface
 	{
@@ -256,6 +261,8 @@ namespace window
 			hook_IN_MouseMove.create(0x00461850, stub_IN_MouseMove);
 			hook_SV_Startup.create(0x00458160, stub_SV_Startup);
 			hook_SV_Shutdown.create(0x00459600, stub_SV_Shutdown);
+
+			stock::Cmd_AddCommand("minimize", Cmd_Minimize);
 		}
 	};
 }
