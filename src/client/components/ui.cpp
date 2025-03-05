@@ -59,7 +59,7 @@ namespace ui
 		static int previous;
 		int t, frameTime;
 		
-		t = (int)(*stock::cgame_mp::syscall)(6); // CG_MILLISECONDS
+		t = (int)(*stock::cgame_mp::syscall)(stock::CG_MILLISECONDS);
 		frameTime = t - previous;
 		previous = t;
 
@@ -78,16 +78,24 @@ namespace ui
 			}
 			fps = 1000 * stock::FPS_FRAMES / total;
 			
-			const auto x = 550;
-			const auto _y = 11;
-			const auto fontID = 1;
-			const auto scale = 0.22f;
-			float color[4] = { 1.f, 1.f, 1.f, 0.80f };
-			float color_shadow[4] = { 0.f, 0.f, 0.f, 0.80f };
-			std::string text = utils::string::va("FPS: %i", fps);
+			const auto background_x = 570;
+			const auto background_y = 0;
+			const auto background_width = 50;
+			const auto background_height = 15;
+			float background_color[4] = {0, 0, 0, 0.6f};
 
-			stock::SCR_DrawString(x + 1, _y + 1, fontID, scale, color_shadow, text.c_str(), NULL, NULL, NULL); // Shadow first
-			stock::SCR_DrawString(x, _y, fontID, scale, color, text.c_str(), NULL, NULL, NULL);
+			// Draw background
+			(*stock::cgame_mp::syscall)(stock::CG_R_SETCOLOR, background_color);
+			auto shader = (stock::qhandle_t)(*stock::cgame_mp::syscall)(stock::CG_R_REGISTERSHADERNOMIP, "black", 5);			
+			stock::CG_DrawPic(background_x, background_y, background_width, background_height, shader);
+			(*stock::cgame_mp::syscall)(stock::CG_R_SETCOLOR, NULL);
+
+			// Draw text
+			const auto fontID = 1;
+			const auto scale = 0.21f;
+			float text_color[4] = {1, 1, 1, 1};
+			std::string text = utils::string::va("FPS: %i", fps);
+			stock::SCR_DrawString(background_x + 3, background_y + 11, fontID, scale, text_color, text.c_str(), NULL, NULL, NULL);
 		}
 	}
 	

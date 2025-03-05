@@ -13,9 +13,6 @@ namespace test
 #if 0
 		
 
-		
-		
-
 
 #endif
 	}
@@ -30,18 +27,6 @@ namespace test
 	}
 #endif
 
-
-
-
-
-	/*uintptr_t addr_resume_test;
-	static __declspec(naked) void stub_Test()
-	{
-		__asm
-		{
-			jmp addr_resume_test;
-		}
-	}*/
 
 
 	
@@ -61,12 +46,9 @@ namespace test
 			//hook_Test.create(ABSOLUTE_CGAME_MP(0x30028a70), stub_Test);
 
 
-			//utils::hook::nop(ABSOLUTE_CGAME_MP(0x30028a70), ABSOLUTE_CGAME_MP(0x30028a70));
 
-			
 
-			//utils::hook::jump(ABSOLUTE_CGAME_MP(0x30014B57), stub_Test);
-			//addr_resume_test = ABSOLUTE_CGAME_MP(0x30015062);
+
 
 		}
 	};

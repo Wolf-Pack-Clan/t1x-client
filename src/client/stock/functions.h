@@ -18,12 +18,15 @@ namespace stock
 	WEAK adjuster<void(cbufExec_t exec_when, const char* text)> Cbuf_ExecuteText{ 0x00428290 };
 	WEAK adjuster<const char*(netadr_t a)> NET_AdrToString{ 0x00449150 };
 	WEAK adjuster<qboolean(netadr_t a, netadr_t b)> NET_CompareAdr{ 0x00449230 };
-	
+	WEAK adjuster<void(float x, float y, float width, float height, qhandle_t hShader)> CG_DrawPic{ 0x300192d0, BASE_CGAME_MP };
 
 
 
 
 
+
+
+	//WEAK adjuster<void(float x, float y, float width, float height, qhandle_t hShader)> SCR_DrawPic{ 0x004168d0 };
 	//WEAK adjuster<void(float x, float y, const char* s, float alpha)> CG_DrawBigString{ 0x30019710, BASE_CGAME_MP };
 	//WEAK adjuster<void(const char* msg, ...)> Com_Printf{ 0x004357b0 };
 	//WEAK adjuster<void()> CL_Disconnect_f{ 0x0040f5f0 };

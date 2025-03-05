@@ -5,6 +5,7 @@ namespace stock
 	typedef void (*xcommand_t)(void);
 	typedef struct vm_s vm_t;
 	typedef int cvarHandle_t;
+	typedef int qhandle_t;
 
 	typedef enum
 	{
@@ -33,6 +34,15 @@ namespace stock
 		STAT_HEALTH,
 		// ...
 	} statIndex_t;
+	
+	typedef enum
+	{
+		// ...
+		CG_MILLISECONDS = 0x6,
+		CG_R_SETCOLOR = 0x48,
+		CG_R_REGISTERSHADERNOMIP = 0x58,
+		// ...
+	} cgameImport_t;
 	
 	typedef struct cvar_s
 	{
