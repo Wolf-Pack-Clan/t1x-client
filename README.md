@@ -12,8 +12,8 @@ ___
 ![ss](https://github.com/user-attachments/assets/afd9b094-5874-4bb4-a623-2e97744e7881)
 ___
 #### References
+- [codextended-client](https://github.com/xtnded/codextended-client)
 - [AlterWare](https://alterware.dev/) & [Aurora](https://auroramod.dev/)
 - [iw4x-client](https://github.com/iw4x/iw4x-client)
-- [codextended-client](https://github.com/xtnded/codextended-client)
 - [CoDPlusPlus](https://github.com/kartjom/CoDPlusPlus)
 - [RTCW-MP](https://github.com/id-Software/RTCW-MP/)
