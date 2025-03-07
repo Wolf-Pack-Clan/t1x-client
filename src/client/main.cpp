@@ -280,70 +280,67 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In
         MSG_ERR("registerURLProtocol failed");
 
     enable_dpi_awareness();
-    
-    // Check if started using URL
+        
     std::string cmdLine = lpCmdLine;
     if (!cmdLine.empty())
     {
-        /*
-        Extract IP from URL
-        TODO: Shorten
-        */
-        const std::string prefix = "iw1x://";
-        if (cmdLine.front() == '"') cmdLine.erase(0, 1);
-        if (cmdLine.back() == '"') cmdLine.pop_back();
-        if (cmdLine.back() == '/') cmdLine.pop_back();
-        if (cmdLine.find(prefix) == 0) cmdLine.erase(0, prefix.length());
-        //MessageBox(NULL, cmdLine.c_str(), "", NULL);
-        
-        if (utils::string::isValidIPPort(cmdLine))
+        const std::string prefix = "\"iw1x://";
+        if (cmdLine.substr(0, prefix.size()) == prefix)
         {
-            if (OpenMutexA(SYNCHRONIZE, FALSE, MOD_NAME) != NULL)
+            // Started using URL, extract IP:port
+            cmdLine.erase(0, prefix.size());
+            if (cmdLine.substr(cmdLine.size() - 2) == "/\"")
+                cmdLine.erase(cmdLine.size() - 2);
+            //MessageBox(NULL, cmdLine.c_str(), "", NULL);
+
+            if (utils::string::isValidIPPort(cmdLine))
             {
-                // An instance is already running
-                //MessageBox(NULL, "already running", "", NULL);
-                HANDLE hPipe = CreateFile(
-                    "\\\\.\\pipe\\iw1x",
-                    GENERIC_WRITE,
-                    0,
-                    NULL,
-                    OPEN_EXISTING,
-                    0,
-                    NULL);
-                
-                if (hPipe == INVALID_HANDLE_VALUE)
+                if (OpenMutexA(SYNCHRONIZE, FALSE, MOD_NAME) != NULL)
                 {
-                    MSG_ERR("Failed to connect to pipe");
-                    return 1;
-                }
+                    // An instance is already running
+                    HANDLE hPipe = CreateFile(
+                        "\\\\.\\pipe\\iw1x",
+                        GENERIC_WRITE,
+                        0,
+                        NULL,
+                        OPEN_EXISTING,
+                        0,
+                        NULL);
                 
-                DWORD bytesWritten;
-                BOOL success = WriteFile(hPipe, cmdLine.c_str(), (DWORD)strlen(cmdLine.c_str()), &bytesWritten, NULL);
-                if (!success)
-                    MSG_ERR("Failed to write to pipe for Discord");
-                //else
-                    //MessageBox(NULL, "success write to pipe", "", NULL);
-                CloseHandle(hPipe);
-                return 0;
+                    if (hPipe == INVALID_HANDLE_VALUE)
+                    {
+                        MSG_ERR("Failed to connect to pipe");
+                        return 1;
+                    }
+                
+                    DWORD bytesWritten;
+                    BOOL success = WriteFile(hPipe, cmdLine.c_str(), (DWORD)strlen(cmdLine.c_str()), &bytesWritten, NULL);
+                    CloseHandle(hPipe);
+                    return (success) ? 0 : (MSG_ERR("Failed to write to pipe for Discord"), 1);
+                }
+                else
+                {
+                    // Save the arg in the window component for stub_Com_Init
+                    std::string arg = "+connect " + cmdLine;
+                    strncpy_s(window::sys_cmdline, arg.c_str(), sizeof(window::sys_cmdline));
+            
+                    // Set the working directory
+                    char moduleFilename[MAX_PATH];
+                    GetModuleFileName(NULL, moduleFilename, sizeof(moduleFilename));
+                    std::filesystem::path path(moduleFilename);
+                    SetCurrentDirectory(path.parent_path().string().c_str());
+                }
             }
             else
             {
-                // Save the arg in the window component for stub_Com_Init
-                std::string arg = "+connect " + cmdLine;
-                strncpy_s(window::sys_cmdline, arg.c_str(), sizeof(window::sys_cmdline));
-            
-                // Set the working directory
-                char moduleFilename[MAX_PATH];
-                GetModuleFileName(NULL, moduleFilename, sizeof(moduleFilename));
-                std::filesystem::path path(moduleFilename);
-                SetCurrentDirectory(path.parent_path().string().c_str());
-                //MessageBox(NULL, path.parent_path().string().c_str(), "", NULL);
+                MSG_ERR("Failed to parse connect URL");
+                return 1;
             }
         }
         else
         {
-            MSG_ERR("Failed to parse connect URL");
-            return 1;
+            // Transfer lpCmdLine to the window component for stub_Com_Init
+            strncpy_s(window::sys_cmdline, cmdLine.c_str(), sizeof(window::sys_cmdline));
         }
     }
     
