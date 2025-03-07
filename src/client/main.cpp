@@ -226,6 +226,7 @@ static FARPROC load_binary()
         ss << std::endl << std::endl << "Is " << MOD_NAME << " in your CoD folder?";
         throw std::runtime_error(ss.str());
     }
+    
     return loader.load(self, data);
 }
 

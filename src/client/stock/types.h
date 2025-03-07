@@ -6,6 +6,8 @@ namespace stock
 	typedef struct vm_s vm_t;
 	typedef int cvarHandle_t;
 	typedef int qhandle_t;
+	typedef float vec_t;
+	typedef vec_t vec3_t[3];
 
 	typedef enum
 	{

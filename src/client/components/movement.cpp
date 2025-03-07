@@ -77,6 +77,72 @@ namespace movement
 		}
 	}
 	
+	static void projectVelocity(const float *in, const float *normal, float *out)
+	{
+		float lengthSq2D;
+		float adjusted;
+		float newZ;
+		float lengthScale;
+    
+		lengthSq2D = (float)(in[0] * in[0]) + (float)(in[1] * in[1]);
+
+		if (fabs(normal[2]) < 0.001 || lengthSq2D == 0.0)
+		{
+			out[0] = in[0];
+			out[1] = in[1];
+			out[2] = in[2];
+		}
+		else
+		{
+			newZ = (float)-(float)((float)(in[0] * normal[0]) + (float)(in[1] * normal[1])) / normal[2];
+			adjusted = in[1];
+			lengthScale = sqrt((float)((float)(in[2] * in[2]) + lengthSq2D) / (float)((float)(newZ * newZ) + lengthSq2D));
+
+			if (lengthScale < 1.0 || newZ < 0.0 || in[2] > 0.0)
+			{
+				out[0] = lengthScale * in[0];
+				out[1] = lengthScale * adjusted;
+				out[2] = lengthScale * newZ;
+			}
+		}
+	}
+	
+	static uint32_t projectOrClip(stock::vec3_t in, stock::vec3_t normal, stock::vec3_t out, float overbounce)
+	{
+		char* cl_gameState_stringData = (char*)0x01436a7c;
+		int* cl_gameState_stringOffsets = (int*)0x1434A7C;
+		char* systemInfo = cl_gameState_stringData + cl_gameState_stringOffsets[stock::CS_SYSTEMINFO];
+
+		/*std::stringstream ss;
+		ss << "####### in[0]: " << in[0] << std::endl;
+		ss << "####### normal[0]: " << normal[0] << std::endl;
+		ss << "####### out[0]: " << out[0] << std::endl;
+		ss << "####### overbounce: " << overbounce << std::endl;
+		OutputDebugString(ss.str().c_str());*/
+		
+		if (atoi(stock::Info_ValueForKey(systemInfo, "jump_bounceEnable")))
+			projectVelocity(in, normal, out);
+		else
+			stock::PM_ClipVelocity(in, normal, out, overbounce);
+		
+		return ABSOLUTE_CGAME_MP(0x3000D830);
+	}
+	
+	static __declspec(naked) void stub_PM_StepSlideMove_PM_ClipVelocity()
+	{
+		__asm
+		{
+			push esi; // out
+			push ecx; // normal
+			push edx; // in
+			call projectOrClip;
+			add esp, 0xc;
+			
+			push eax;
+			retn;
+		}
+	}
+	
 	class component final : public component_interface
 	{
 	public:
@@ -94,6 +160,7 @@ namespace movement
 		void post_cgame() override
 		{
 			utils::hook::jump(ABSOLUTE_CGAME_MP(0x30032fe8), stub_cg_zoomSensitivity_calculation);
+			utils::hook::jump(ABSOLUTE_CGAME_MP(0x3000d82b), stub_PM_StepSlideMove_PM_ClipVelocity);
 		}
 	};
 }
