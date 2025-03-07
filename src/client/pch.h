@@ -5,6 +5,7 @@
 #include <atlbase.h>
 #include <dbghelp.h>
 #include <TlHelp32.h>
+#include <wincrypt.h>
 
 // min and max is required by gdi, therefore NOMINMAX won't work
 #ifdef max

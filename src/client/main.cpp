@@ -190,6 +190,27 @@ static DWORD WINAPI stub_GetModuleFileNameW(HMODULE hModule, LPWSTR lpFilename, 
     return ret;
 }
 
+static bool compare_md5(const std::string& data, const std::string& expected_hash)
+{
+    HCRYPTPROV hProv;
+    HCRYPTHASH hHash;
+    BYTE hash[16];
+    DWORD hashSize = sizeof(hash);
+    char hex_hash[33]{};
+    
+    if (!CryptAcquireContext(&hProv, nullptr, nullptr, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) return false;
+    if (!CryptCreateHash(hProv, CALG_MD5, 0, 0, &hHash)) { CryptReleaseContext(hProv, 0); return false; }
+    if (!CryptHashData(hHash, (BYTE*)data.data(), data.size(), 0)) { CryptDestroyHash(hHash); CryptReleaseContext(hProv, 0); return false; }
+    if (!CryptGetHashParam(hHash, HP_HASHVAL, hash, &hashSize, 0)) { CryptDestroyHash(hHash); CryptReleaseContext(hProv, 0); return false; }
+    CryptDestroyHash(hHash); CryptReleaseContext(hProv, 0);
+    
+    for (int i = 0; i < 16; i++)
+        sprintf_s(hex_hash + i * 2, 3, "%02X", hash[i]);
+    hex_hash[32] = '\0';
+    
+    return expected_hash == hex_hash;
+}
+
 static FARPROC load_binary()
 {
     loader loader;
@@ -224,6 +245,13 @@ static FARPROC load_binary()
         std::stringstream ss;
         ss << "Failed to read " << client_filename;
         ss << std::endl << std::endl << "Is " << MOD_NAME << " in your CoD folder?";
+        throw std::runtime_error(ss.str());
+    }
+    
+    if (!compare_md5(data, "753FBCABD0FDDA7F7DAD3DBB29C3C008"))
+    {
+        std::stringstream ss;
+        ss << "Your " << client_filename << " file hash doesn't match the original CoD 1.1 file.";
         throw std::runtime_error(ss.str());
     }
     
