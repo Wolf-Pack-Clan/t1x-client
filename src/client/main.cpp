@@ -117,7 +117,7 @@ static bool registerURLProtocol()
 
 static FARPROC WINAPI stub_GetProcAddress(const HMODULE hModule, const LPCSTR lpProcName)
 {
-    if (lpProcName == "GlobalMemoryStatusEx"s)
+    if (!strcmp(lpProcName, "GlobalMemoryStatusEx"))
         component_loader::post_unpack();
     return GetProcAddress(hModule, lpProcName);
 }
@@ -198,17 +198,61 @@ static bool compare_md5(const std::string& data, const std::string& expected_has
     DWORD hashSize = sizeof(hash);
     char hex_hash[33]{};
     
-    if (!CryptAcquireContext(&hProv, nullptr, nullptr, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) return false;
-    if (!CryptCreateHash(hProv, CALG_MD5, 0, 0, &hHash)) { CryptReleaseContext(hProv, 0); return false; }
-    if (!CryptHashData(hHash, (BYTE*)data.data(), data.size(), 0)) { CryptDestroyHash(hHash); CryptReleaseContext(hProv, 0); return false; }
-    if (!CryptGetHashParam(hHash, HP_HASHVAL, hash, &hashSize, 0)) { CryptDestroyHash(hHash); CryptReleaseContext(hProv, 0); return false; }
-    CryptDestroyHash(hHash); CryptReleaseContext(hProv, 0);
+    if (!CryptAcquireContext(&hProv, nullptr, nullptr, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+        return false;
+    if (!CryptCreateHash(hProv, CALG_MD5, 0, 0, &hHash))
+    { 
+        CryptReleaseContext(hProv, 0);
+        return false;
+    }
+    if (!CryptHashData(hHash, (BYTE*)data.data(), data.size(), 0))
+    {
+        CryptDestroyHash(hHash);
+        CryptReleaseContext(hProv, 0);
+        return false;
+    }
+    if (!CryptGetHashParam(hHash, HP_HASHVAL, hash, &hashSize, 0))
+    {
+        CryptDestroyHash(hHash);
+        CryptReleaseContext(hProv, 0);
+        return false;
+    }
+    CryptDestroyHash(hHash);
+    CryptReleaseContext(hProv, 0);
     
     for (int i = 0; i < 16; i++)
         sprintf_s(hex_hash + i * 2, 3, "%02X", hash[i]);
     hex_hash[32] = '\0';
     
     return expected_hash == hex_hash;
+}
+
+static bool read_file(const std::string& file, std::string* data)
+{
+	if (!data)
+        return false;
+	data->clear();
+
+	if (std::ifstream(file).good())
+	{
+		std::ifstream stream(file, std::ios::binary);
+		if (!stream.is_open())
+            return false;
+
+		stream.seekg(0, std::ios::end);
+		const std::streamsize size = stream.tellg();
+		stream.seekg(0, std::ios::beg);
+
+		if (size > -1)
+		{
+			data->resize(static_cast<uint32_t>(size));
+			stream.read(data->data(), size);
+			stream.close();
+			return true;
+		}
+	}
+
+	return false;
 }
 
 static FARPROC load_binary()
@@ -234,13 +278,14 @@ static FARPROC load_binary()
     
     // Check if the CoD file is named mohaa
     std::filesystem::path currentPath_mohaa_test = std::filesystem::current_path() / "mohaa.exe";
-    if (utils::io::file_exists(currentPath_mohaa_test.string()))
+    if (std::ifstream(currentPath_mohaa_test.string()).good())
         clientNamedMohaa = true;
 
     auto client_filename = get_client_filename();
 
-    std::string data;
-    if (!utils::io::read_file(client_filename, &data))
+    std::string data_codmp;
+
+    if (!read_file(client_filename, &data_codmp))
     {
         std::stringstream ss;
         ss << "Failed to read " << client_filename;
@@ -248,14 +293,14 @@ static FARPROC load_binary()
         throw std::runtime_error(ss.str());
     }
     
-    if (!compare_md5(data, "753FBCABD0FDDA7F7DAD3DBB29C3C008"))
+    if (!compare_md5(data_codmp, "753FBCABD0FDDA7F7DAD3DBB29C3C008"))
     {
         std::stringstream ss;
         ss << "Your " << client_filename << " file hash doesn't match the original CoD 1.1 file.";
         throw std::runtime_error(ss.str());
     }
     
-    return loader.load(self, data);
+    return loader.load(self, data_codmp);
 }
 
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In_ int)

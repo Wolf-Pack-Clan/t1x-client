@@ -10,6 +10,8 @@
 
 namespace scheduler
 {
+	using namespace std::literals;
+
 	enum pipeline
 	{
 		client,
