@@ -84,6 +84,7 @@ linkoptions
 	"/SAFESEH:NO", -- Prevents crash on Win10 when loading map
 	"/LAST:._text"
 }
+vectorextensions "IA32"
 submodules.imports()
 
 -- Project: utils
