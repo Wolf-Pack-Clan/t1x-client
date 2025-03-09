@@ -254,6 +254,8 @@ namespace window
 	public:
 		void post_unpack() override
 		{
+			stock::Cmd_AddCommand("minimize", Cmd_Minimize);
+
 			utils::hook::set(0x4639b9 + 1, stub_MainWndProc);
 			utils::hook::set(0x5083b1, 0x00); // Alt+Tab support, see https://github.com/xtnded/codextended-client/pull/1
 			
@@ -261,8 +263,6 @@ namespace window
 			hook_IN_MouseMove.create(0x00461850, stub_IN_MouseMove);
 			hook_SV_Startup.create(0x00458160, stub_SV_Startup);
 			hook_SV_Shutdown.create(0x00459600, stub_SV_Shutdown);
-
-			stock::Cmd_AddCommand("minimize", Cmd_Minimize);
 		}
 	};
 }

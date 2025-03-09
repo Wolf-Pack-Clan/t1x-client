@@ -296,7 +296,7 @@ static FARPROC load_binary()
     if (!compare_md5(data_codmp, "753FBCABD0FDDA7F7DAD3DBB29C3C008"))
     {
         std::stringstream ss;
-        ss << "Your " << client_filename << " file hash doesn't match the original CoD 1.1 file.";
+        ss << "Your " << client_filename << " file hash doesn't match the original.";
         throw std::runtime_error(ss.str());
     }
     

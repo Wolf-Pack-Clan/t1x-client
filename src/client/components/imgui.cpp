@@ -75,8 +75,12 @@ namespace imgui
 		ImGui::CreateContext();
 
 		ImGuiIO& io = ImGui::GetIO();
+		//ImGuiStyle& style = ImGui::GetStyle();
 		io.IniFilename = "iw1x_imgui.ini";
 		io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Verdana.ttf", 16.0f);
+
+		// See enum ImGuiCol_ in submodule imgui.h
+		//style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.98f, 0.96f, 0.39f, 1.0f);
 
 		ImGui_ImplWin32_InitForOpenGL(*stock::hWnd);
 		ImGui_ImplOpenGL2_Init();
@@ -370,9 +374,7 @@ namespace imgui
 		void* load_import(const std::string&, const std::string& function) override
 		{
 			if (function == "SwapBuffers")
-			{
 				return stub_SwapBuffers;
-			}
 			return nullptr;
 		}
 

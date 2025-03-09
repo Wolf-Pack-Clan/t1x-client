@@ -140,23 +140,22 @@ namespace ui
 			cg_drawWeaponSelect = stock::Cvar_Get("cg_drawWeaponSelect", "1", stock::CVAR_ARCHIVE);
 			cg_drawDisconnect = stock::Cvar_Get("cg_drawDisconnect", "1", stock::CVAR_ARCHIVE);
 			cg_drawFPS_custom = stock::Cvar_Get("cg_drawFPS_custom", "0", stock::CVAR_ARCHIVE);
-			cg_drawPing = stock::Cvar_Get("cg_drawPing", "0", stock::CVAR_ARCHIVE);
-
-			// Replace "k" by "KB" in SCR_DrawDemoRecording
-			utils::hook::set(0x00416b82 + 1, "RECORDING %s: %iKB");
+			cg_drawPing = stock::Cvar_Get("cg_drawPing", "0", stock::CVAR_ARCHIVE);			
 
 			scheduler::loop(draw_branding, scheduler::pipeline::renderer);
 			scheduler::loop(draw_ping, scheduler::pipeline::cgame);
+
+			// Replace "k" by "KB" in SCR_DrawDemoRecording
+			utils::hook::set(0x00416b82 + 1, "RECORDING %s: %iKB");
 		}
 
 		void post_cgame() override
 		{
-			hook_CG_DrawWeaponSelect.create(ABSOLUTE_CGAME_MP(0x30037790), stub_CG_DrawWeaponSelect);
-
 			utils::hook::jump(ABSOLUTE_CGAME_MP(0x300159CC), stub_CG_DrawDisconnect);
 			utils::hook::jump(ABSOLUTE_CGAME_MP(0x300159D4), stub_CG_DrawDisconnect);
 			
 			hook_CG_DrawFPS.create(ABSOLUTE_CGAME_MP(0x30014a00), stub_CG_DrawFPS);
+			hook_CG_DrawWeaponSelect.create(ABSOLUTE_CGAME_MP(0x30037790), stub_CG_DrawWeaponSelect);
 		}
 	};
 }

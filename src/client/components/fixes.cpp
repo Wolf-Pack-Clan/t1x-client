@@ -19,12 +19,12 @@ namespace fixes
 
 		__asm
 		{
-			cmp ebx, 20h;
+			cmp ebx, 0x20;
 			jge check;
 			jmp pfield_charevent_return;
 
 		check:
-			cmp ebx, 126;
+			cmp ebx, 0x7E;
 			jl checked;
 			jmp pfield_charevent_return;
 
@@ -60,11 +60,6 @@ namespace fixes
 	public:
 		void post_unpack() override
 		{
-			// Prevent inserting the char of the console key in the text field (e.g. Superscript Two gets inserted using french keyboard)
-			utils::hook::jump(0x40CB1E, stub_Field_CharEvent_ignore_console_char);
-
-			// Prevent displaying squares in server name (occurs when hostname contains e.g. SOH chars)
-			utils::hook::call(0x412A2C, stub_CL_SetServerInfo_hostname_strncpy);
 
 			/*
 			Prevent the CD Key error when joining a server (occurs when joined a fs_game server previously)
@@ -72,7 +67,13 @@ namespace fixes
 			See https://github.com/xtnded/codextended-client/blob/45af251518a390ab08b1c8713a6a1544b70114a1/fixes.cpp#L21
 			*/
 			utils::hook::nop(0x0042d122, 5);
-			
+
+			// Prevent displaying squares in server name (occurs when hostname contains e.g. SOH chars)
+			utils::hook::call(0x412A2C, stub_CL_SetServerInfo_hostname_strncpy);
+
+			// Prevent inserting the char of the console key in the text field (e.g. Superscript Two gets inserted using french keyboard)
+			utils::hook::jump(0x40CB1E, stub_Field_CharEvent_ignore_console_char);
+
 			// Prevent timescale remaining modified after leaving server/demo
 			hook_CL_Disconnect.create(0x0040ef90, stub_CL_Disconnect);
 		}

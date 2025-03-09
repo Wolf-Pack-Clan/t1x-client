@@ -27,15 +27,15 @@ namespace view
 	{
 		__asm
 		{
-			sub esp, 4;
+			sub esp, 0x4;
 			fstp dword ptr[esp];			
 			push dword ptr[esp];
 			call scaledFOV;
-			add esp, 4;
+			add esp, 0x4;
 
 			fstp dword ptr[esp];
 			fld dword ptr[esp];
-			add esp, 4;
+			add esp, 0x4;
 
 			pop ecx;
 			ret;
@@ -67,15 +67,10 @@ namespace view
 
 	static void death_stoprecord()
 	{
-		if (record_respawn->integer)
+		if (record_respawn->integer && *stock::clc_demorecording)
 		{
-			if (*stock::clc_demorecording)
-			{
-				if ((*stock::pm)->ps->stats[stock::STAT_HEALTH] == 0)
-				{
-					stock::Cbuf_ExecuteText(stock::EXEC_APPEND, "stoprecord\n");
-				}
-			}
+			if ((*stock::pm)->ps->stats[stock::STAT_HEALTH] == 0)
+				stock::Cbuf_ExecuteText(stock::EXEC_APPEND, "stoprecord\n");
 		}
 	}
 	
@@ -93,11 +88,11 @@ namespace view
 
 		void post_cgame() override
 		{
+			scheduler::loop(death_stoprecord, scheduler::pipeline::client);
+
 			utils::hook::jump(ABSOLUTE_CGAME_MP(0x30032f2a), stub_CG_CalcFov_return);
 			
 			hook_CG_Respawn.create(ABSOLUTE_CGAME_MP(0x30028a70), stub_CG_Respawn);
-
-			scheduler::loop(death_stoprecord, scheduler::pipeline::client);
 		}
 	};
 }

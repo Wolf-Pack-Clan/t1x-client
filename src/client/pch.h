@@ -3,12 +3,15 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 
+// Windows
 #include <Windows.h>
 #include <atlbase.h>
 #include <dbghelp.h>
 #include <TlHelp32.h>
 #include <wincrypt.h>
 
+// C++
+#include <cassert>
 #include <filesystem>
 #include <fstream>
 #include <mutex>
@@ -16,11 +19,9 @@
 #include <sstream>
 #include <string>
 
-#include "gsl/gsl"
-#include "MinHook.h"
-#include "imgui.h"
-#include "backends/imgui_impl_opengl2.h"
-#include "backends/imgui_impl_win32.h"
+// Submodules
+#include <gsl/gsl>
+#include <MinHook.h>
 
 /*
 Size found using Ghidra

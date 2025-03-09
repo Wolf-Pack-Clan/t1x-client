@@ -10,7 +10,7 @@
 #include "scheduler.h"
 #include "window.h"
 
-#include "discord_rpc.h"
+#include <discord_rpc.h>
 
 namespace discord
 {

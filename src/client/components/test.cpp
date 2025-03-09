@@ -8,18 +8,23 @@
 
 namespace test
 {
+
+
 	static void Command_test()
 	{
 #if 0
-		
 
 
 #endif
 	}
 
+
+
+
+
 #if 0
 	utils::hook::detour hook_Test;
-	void stub_Test()
+	static void stub_Test()
 	{
 		OutputDebugString("stub_Test\n");
 		hook_Test.invoke();

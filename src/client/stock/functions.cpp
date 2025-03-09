@@ -24,7 +24,7 @@ namespace stock
 	
 	const char* Info_ValueForKey(const char* buffer, const char* key)
 	{
-		_asm
+		__asm
 		{
 			mov ebx, key;
 			mov ecx, buffer;
@@ -35,20 +35,20 @@ namespace stock
 	
 	void CL_MouseEvent(int _dx, int _dy)
 	{
-		_asm
+		__asm
 		{
 			mov ecx, _dx;
 			push eax;
 			mov eax, _dy;
 			call addr_CL_MouseEvent;
-			add esp, 4;
+			add esp, 0x4;
 		}
 	}
 	
 	void PM_ClipVelocity(vec3_t _in, vec3_t normal, vec3_t _out, float overbounce)
 	{
 		uintptr_t addr_PM_ClipVelocity = ABSOLUTE_CGAME_MP(0x30007380);
-		_asm
+		__asm
 		{
 			push overbounce;
 			mov esi, _out;
