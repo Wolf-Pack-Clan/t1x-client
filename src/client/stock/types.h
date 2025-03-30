@@ -3,7 +3,6 @@ namespace stock
 	typedef unsigned char byte;
 	typedef enum { qfalse, qtrue } qboolean;
 	typedef void (*xcommand_t)(void);
-	typedef struct vm_s vm_t;
 	typedef int cvarHandle_t;
 	typedef int qhandle_t;
 	typedef float vec_t;
@@ -46,25 +45,6 @@ namespace stock
 		// ...
 	} cgameImport_t;
 
-	typedef enum
-	{
-		// ...
-	} stereoFrame_t;
-	
-	typedef struct cvar_s
-	{
-		char* name;
-		char* string;
-		char* resetString;
-		char* latchedString;
-		int flags;
-		qboolean modified;
-		int modificationCount;
-		float value;
-		int integer;
-		// ...
-	} cvar_t;
-
 	typedef struct
 	{
 		cvarHandle_t handle;
@@ -96,30 +76,6 @@ namespace stock
 		playerState_t* ps;
 		// ...
 	} pmove_t;
-	
-	typedef struct weaponInfo_s
-	{
-		byte gap_0x0[0x224];
-		char* adsOverlayShader;	// 0x224
-		// ...
-	} weaponInfo_t;
-	
-	typedef enum
-	{
-		// ...
-		NA_LOOPBACK = 2,
-		// ...
-	} netadrtype_t;
-	
-	typedef struct
-	{
-		netadrtype_t type;
-		byte ip[4];
-		byte ipx[10];
-		unsigned short port;
-	} netadr_t;
-
-
 
 
 

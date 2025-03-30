@@ -27,6 +27,6 @@
 Size found using Ghidra
 IMAGE_NT_HEADERS32 -> IMAGE_OPTIONAL_HEADER32: SizeOfImage - SizeOfHeaders
 */
-constexpr auto BINARY_PAYLOAD_SIZE = 0x15C1000;
+constexpr auto BINARY_PAYLOAD_SIZE = 0x4A3E000;
 
-constexpr auto MOD_NAME = "iw1x";
+constexpr auto MOD_NAME = "t1x";

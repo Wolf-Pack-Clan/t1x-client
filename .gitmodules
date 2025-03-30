@@ -4,12 +4,6 @@
 [submodule "submodules/minhook"]
 	path = submodules/minhook
 	url = https://github.com/TsudaKageyu/minhook.git
-[submodule "submodules/imgui"]
-	path = submodules/imgui
-	url = https://github.com/ocornut/imgui.git
-[submodule "submodules/discord-rpc"]
-	path = submodules/discord-rpc
-	url = https://github.com/raphael12333/discord-rpc.git
 [submodule "submodules/rapidjson"]
 	path = submodules/rapidjson
 	url = https://github.com/Tencent/rapidjson.git

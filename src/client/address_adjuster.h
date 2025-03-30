@@ -1,3 +1,4 @@
+#include <wtypesbase.h>
 #define WEAK __declspec(selectany)
 
 constexpr auto BASE_CGAME_MP = 0x30000000;
