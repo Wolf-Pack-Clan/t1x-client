@@ -2,6 +2,7 @@
 # Improvements for [CoDUO](https://en.wikipedia.org/wiki/Call_of_Duty:_United_Offensive) Multiplayer client
 ### Adding security, fixes, and features
 Supported game version: **1.51**
+
 Based on [iw1x-client](https://github.com/raphael12333/iw1x-client)
 ___
 ### Download
