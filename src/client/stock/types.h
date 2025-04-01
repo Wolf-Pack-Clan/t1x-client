@@ -62,14 +62,28 @@ namespace stock
 		int cvarFlags;
 	} cvarTable_t;
 	
-	typedef struct playerState_s
+	/*typedef struct playerState_s
 	{
 		byte gap_0x0[0xB0];
 		int weapon; // 0xB0
 		byte gap_0xB4[0x40];
 		statIndex_t stats[6]; // 0xf4
 		// ...
+	} playerState_t;//*/
+	
+	typedef struct playerState_s
+	{
+		char gap1[12];
+		int pm_flags;
+		int pm_time;
+		vec3_t origin;
+		vec3_t velocity;
+		char gap2[56];
+		int jumpTime;
+		float jumpOriginZ;
+		//...
 	} playerState_t;
+	
 	
 	typedef struct
 	{

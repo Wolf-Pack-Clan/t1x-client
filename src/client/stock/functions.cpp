@@ -14,4 +14,15 @@ namespace stock
 	{
 		return cmd_argv[arg];
 	}
+
+	const char* Info_ValueForKey(const char* buffer, const char* key)
+	{
+		_asm
+		{
+			mov ebx, key;
+			mov ecx, buffer;
+			mov eax, 0x0044fb70;
+			call eax;
+		}
+	}
 }

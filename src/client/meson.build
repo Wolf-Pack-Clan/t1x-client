@@ -28,7 +28,6 @@ client_includes = include_directories(
   '../../submodules/GSL/include',
   #'../../submodules/imgui',
   '../../submodules/minhook/include',
-  '../../submodules/rapidjson/include',
   msvc_dir + '/VC/Tools/MSVC/14.43.34808/include'
 )
 
@@ -142,11 +141,11 @@ utils_dep = declare_dependency(
 #)
 
 ### rapidjson ###
-rapidjson_include = include_directories('../../submodules/rapidjson/include')
+#rapidjson_include = include_directories('../../submodules/rapidjson/include')
 
-rapidjson_dep = declare_dependency(
-  include_directories : rapidjson_include
-)
+#rapidjson_dep = declare_dependency(
+#  include_directories : rapidjson_include
+#)
 
 # resource file
 windres = meson.get_external_property('windres', '')
@@ -157,18 +156,19 @@ resource = custom_target('resource',
   command : [windres, '@INPUT@', '-O', 'coff', '-o', '@OUTPUT@']
 )
 
-cod_dir = run_command('sh', '-c', 'echo $COD_DIR', check : false).stdout().strip()
-if cod_dir == ''
-  cod_dir = meson.current_source_dir() + '/../../build'
-  warning('The `COD_DIR` environment variable is not set. Defaulting to ' + run_command('sh', '-c', 'echo $(realpath "' + cod_dir + '")', check : true).stdout().strip())
+coduo_dir = run_command('sh', '-c', 'echo $CODUO_DIR', check : false).stdout().strip()
+if coduo_dir == ''
+  #coduo_dir = meson.current_source_dir() + '/../../build'
+  coduo_dir = '/mnt/sda8/coduo'
+  warning('The `CODUO_DIR` environment variable is not set. Defaulting to ' + run_command('sh', '-c', 'echo $(realpath "' + coduo_dir + '")', check : true).stdout().strip())
 endif
 
 ########### Executable ###########
 
 executable('t1x', client_sources + resource,# client_headers, # Apparently not needed
   include_directories : client_includes,
-  dependencies : [utils_dep, minhook_dep, gsl_dep, rapidjson_dep],
-  install_dir : cod_dir,
+  dependencies : [utils_dep, minhook_dep, gsl_dep],
+  install_dir : coduo_dir,
   install : true,
   win_subsystem : 'windows',
   link_args : ['/DYNAMICBASE:NO', '/LAST:._text'],

@@ -104,18 +104,19 @@ ninja -C build/meson
 echo -e "${BOLD}Compilation Complete.${NC}"
 
 # Determine install directory
-if [ -z "$COD_DIR" ]; then
-  export COD_DIR=$(realpath ./build)
+if [ -z "$CODUO_DIR" ]; then
+  #export CODUO_DIR=$(realpath ./build)
+  export CODUO_DIR="/mnt/sda8/coduo"
 fi
 
 # Ask to install
 print_header "Installation"
-echo -e "Do you wish to install iw1x-client to ${BLUE}$COD_DIR${NC}? [Y/n]"
+echo -e "Do you wish to install t1x-client to ${BLUE}$CODUO_DIR${NC}? [Y/n]"
 read install
 if [[ $install == [Yy]* ]]; then
   ninja -C build/meson install
   print_success "Installation complete."
-  echo -e "${BOLD}Installed to:${NC} ${BLUE}$COD_DIR${NC}"
+  echo -e "${BOLD}Installed to:${NC} ${BLUE}$CODUO_DIR${NC}"
   # Copy it to build folder
   cp -rf build/meson/src/client/t1x.exe build/
 else
