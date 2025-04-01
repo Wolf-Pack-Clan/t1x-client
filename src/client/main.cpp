@@ -167,7 +167,6 @@ static bool compare_md5(const std::string& data, const std::string& expected_has
     for (int i = 0; i < 16; i++)
         sprintf_s(hex_hash + i * 2, 3, "%02X", hash[i]);
     hex_hash[32] = '\0';
-    printf("%s\n", hex_hash);
     
     return expected_hash == hex_hash;
 }
@@ -237,13 +236,11 @@ static FARPROC load_binary()
         ss << std::endl << std::endl << "Is " << MOD_NAME << " in your CoDUO folder?";
         throw std::runtime_error(ss.str());
     }
-    //bool test = compare_md5(data_coduomp, "928dd08dc169bd85fdd12d2db28def70");
-    //printf("Test: %d", test);
     
     if (!compare_md5(data_coduomp, "928DD08DC169BD85FDD12D2DB28DEF70"))
     {
         std::stringstream ss;
-        ss << "Your " << client_filename << " file hash doesn't match the original.";
+        ss << "Your " << client_filename << " file hash doesn't match the original.\n Are you using the original CoDUOMP.exe for v1.51?";
         throw std::runtime_error(ss.str());
     }
     

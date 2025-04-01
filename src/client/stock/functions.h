@@ -2,6 +2,7 @@ namespace stock
 {
 	int Cmd_Argc();
 	char* Cmd_Argv(int arg);
+	const char* Info_ValueForKey(const char* buffer, const char* key);
 	//WEAK adjuster<void(int code, const char* fmt, ...)> Com_Error{ 0x00435ad0 };
 	//WEAK adjuster<void(cbufExec_t exec_when, const char* text)> Cbuf_ExecuteText{ 0x00428290 };
 

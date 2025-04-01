@@ -1,3 +1,7 @@
+#define clc_stringData ((PCHAR)0x495e6f4)
+#define clc_stringOffsets ((PINT)0x495c6f4)
+#define cs0 (clc_stringData + clc_stringOffsets[0])
+#define cs1 (clc_stringData + clc_stringOffsets[1])
 
 namespace stock
 {
