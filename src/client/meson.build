@@ -15,7 +15,7 @@ for i in stock/*.cpp; do
 done
 '''
 client_sources = files(run_command('sh', '-c', grab_cl_src, check : false).stdout().strip().split('\n'))
-
+message(run_command('sh', '-c', grab_cl_src, check : false).stdout().strip())
 ########### Include directories ###########
 
 msvc_dir = run_command('sh', '-c', 'echo $MSVC_DIR', check : false).stdout().strip()

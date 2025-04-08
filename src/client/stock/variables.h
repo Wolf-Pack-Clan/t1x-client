@@ -36,4 +36,5 @@ namespace stock
 
 	//WEAK adjuster<vm_t*> uivm{ 0, 0x0161747c };
 	//WEAK adjuster<int> ping{ 0x41405d };
+	WEAK adjuster<int> bg_iNumWeapons{ 0x0010ed3c, BASE_CGAME_MP };
 }

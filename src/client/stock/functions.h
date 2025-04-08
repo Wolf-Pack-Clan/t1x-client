@@ -17,4 +17,8 @@ namespace stock
 	//WEAK adjuster<void(const char* msg, ...)> Com_Printf{ 0x004357b0 };
 	//WEAK adjuster<void()> CL_Disconnect_f{ 0x0040f5f0 };
 	//WEAK symbol<int(vm_t* vm, int callnum, ...)> VM_Call{ 0, 0x00460480 };
+	int32_t BG_GetNumWeapons();
+	bool BG_IsWeaponIndexValid(int32_t index);
+	int32_t BG_GetWeaponIndexForName(const char* name);
+	weaponinfo_t *BG_GetWeaponDef(int32_t index);
 }
