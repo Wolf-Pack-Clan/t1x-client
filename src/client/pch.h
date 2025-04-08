@@ -18,6 +18,7 @@
 #include <queue>
 #include <sstream>
 #include <string>
+#include <map>
 
 // Submodules
 #include <gsl/gsl>
