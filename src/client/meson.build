@@ -95,8 +95,7 @@ resource = custom_target('resource',
 
 coduo_dir = run_command('sh', '-c', 'echo $CODUO_DIR', check : false).stdout().strip()
 if coduo_dir == ''
-  #coduo_dir = meson.current_source_dir() + '/../../build'
-  coduo_dir = '/home/kazam/games/coduo'
+  coduo_dir = meson.current_source_dir() + '/../../build'
   warning('The `CODUO_DIR` environment variable is not set. Defaulting to ' + run_command('sh', '-c', 'echo $(realpath "' + coduo_dir + '")', check : true).stdout().strip())
 endif
 
@@ -126,4 +125,3 @@ shared_library('testplugin', test_sources + client_sources,
   name_prefix : '',
   name_suffix : 'dll'
 )
-

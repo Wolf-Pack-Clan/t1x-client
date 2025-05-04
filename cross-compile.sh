@@ -105,8 +105,7 @@ echo -e "${BOLD}Compilation Complete.${NC}"
 
 # Determine install directory
 if [ -z "$CODUO_DIR" ]; then
-  #export CODUO_DIR=$(realpath ./build)
-  export CODUO_DIR="/mnt/sda8/coduo"
+  export CODUO_DIR=$(realpath ./build)
 fi
 
 # Ask to install
