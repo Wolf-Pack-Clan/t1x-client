@@ -7,6 +7,51 @@ void component_loader::register_component(std::unique_ptr<component_interface>&&
 	get_components().push_back(std::move(component));
 }
 
+void component_loader::load_dll_components()
+{
+    std::filesystem::path plugins_path = "plugins";
+    if (!std::filesystem::exists(plugins_path))
+    {
+        printf("Plugins directory does not exist.\n");
+        return;
+    }
+
+    for (const auto& entry : std::filesystem::directory_iterator(plugins_path))
+    {
+        if (entry.path().extension() == ".dll")
+        {
+            HMODULE hModule = LoadLibraryA(entry.path().string().c_str());
+            if (hModule)
+            {
+                typedef void (*RegisterComponentFunc)();
+                RegisterComponentFunc register_func = (RegisterComponentFunc)GetProcAddress(hModule, "register_component");
+                if (register_func)
+                {
+                    try
+                    {
+                        register_func();
+                        printf("Loaded component from %s\n", entry.path().string().c_str());
+                    }
+                    catch (const std::exception& e)
+                    {
+                        printf("Error registering component from %s: %s\n", entry.path().string().c_str(), e.what());
+                        FreeLibrary(hModule);
+                    }
+                }
+                else
+                {
+                    printf("DLL %s does not export 'register_component'\n", entry.path().string().c_str());
+                    FreeLibrary(hModule);
+                }
+            }
+            else
+            {
+                printf("Failed to load DLL %s: %d\n", entry.path().string().c_str(), GetLastError());
+            }
+        }
+    }
+}
+
 bool component_loader::post_start()
 {
 	static auto handled = false;
