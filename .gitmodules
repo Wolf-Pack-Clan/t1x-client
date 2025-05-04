@@ -4,6 +4,3 @@
 [submodule "submodules/minhook"]
 	path = submodules/minhook
 	url = https://github.com/TsudaKageyu/minhook.git
-[submodule "submodules/rapidjson"]
-	path = submodules/rapidjson
-	url = https://github.com/Tencent/rapidjson.git
