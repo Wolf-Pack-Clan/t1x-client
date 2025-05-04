@@ -113,15 +113,3 @@ executable('t1x', client_sources + resource,# client_headers, # Apparently not n
 )
 
 test_sources = files('./plugin/test.cpp')
-
-shared_library('testplugin', test_sources + client_sources,
-  include_directories : client_includes,
-  dependencies : [utils_dep, minhook_dep, gsl_dep],
-  cpp_pch : './pch.h',
-  install_dir : coduo_dir + '/plugins',
-  install : true,
-  link_args : ['/DYNAMICBASE:NO'],
-  cpp_args : ['/D_MSVC_WINE'],
-  name_prefix : '',
-  name_suffix : 'dll'
-)

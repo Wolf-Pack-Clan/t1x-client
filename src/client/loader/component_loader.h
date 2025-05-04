@@ -35,7 +35,6 @@ public:
 	}
 
 	static void register_component(std::unique_ptr<component_interface>&& component);
-	static void load_dll_components();
 	static bool post_start();
 	static bool post_load();
 	static void post_unpack();
