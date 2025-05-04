@@ -9,6 +9,7 @@
 #include <dbghelp.h>
 #include <TlHelp32.h>
 #include <wincrypt.h>
+#include <shlwapi.h>
 
 // C++
 #include <cassert>

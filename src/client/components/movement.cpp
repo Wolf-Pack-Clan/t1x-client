@@ -171,6 +171,7 @@ namespace movement
 		void post_unpack() override
 		{	
 			stock::Cmd_AddCommand("test", Cmd_Test);
+			printf("movement post_unpack called\n");
 		}
 
 		void post_cgame() override
@@ -198,7 +199,12 @@ namespace movement
 			utils::hook::jump(ABSOLUTE_CGAME_MP(0x30008cb8), hook_Jump_Start_Naked);
 
 			utils::hook::jump(ABSOLUTE_CGAME_MP(0x30008410), custom_PM_GetReducedFriction_Naked);
+			printf("movement post_cgame called");
 		}
+		void post_ui_mp() override
+        {
+        	printf("movement post_ui_mp called\n");
+        }
 	};
 }
 
