@@ -54,8 +54,9 @@ namespace test
 	};
 }
 
-extern "C" __declspec(dllexport) void register_component()
+extern "C" __declspec(dllexport) component_interface* create_component()
 {
-    component_loader::register_component(std::make_unique<test::component>());
+    printf("Creating test component\n");
+    return new test::component();
 }
 #endif

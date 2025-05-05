@@ -2,12 +2,65 @@
 
 #include "component_loader.h"
 
+void component_loader::load_dll_components()
+{
+    std::filesystem::path plugins_path = "plugins";
+    if (!std::filesystem::exists(plugins_path))
+    {
+        printf("Plugins directory does not exist.\n");
+        return;
+    }
+
+    for (const auto& entry : std::filesystem::directory_iterator(plugins_path))
+    {
+        if (entry.path().extension() == ".dll")
+        {
+            HMODULE hModule = LoadLibraryA(entry.path().string().c_str());
+            if (hModule)
+            {
+                typedef component_interface* (*CreateComponentFunc)();
+                CreateComponentFunc create_func = (CreateComponentFunc)GetProcAddress(hModule, "create_component");
+                if (create_func)
+                {
+                    try
+                    {
+                        component_interface* component = create_func();
+                        if (component)
+                        {
+                            register_component(std::unique_ptr<component_interface>(component));
+                            printf("Loaded component from %s\n", entry.path().string().c_str());
+                        }
+                        else
+                        {
+                            printf("Failed to create component from %s\n", entry.path().string().c_str());
+                        }
+                    }
+                    catch (const std::exception& e)
+                    {
+                        printf("Error loading component from %s: %s\n", entry.path().string().c_str(), e.what());
+                        FreeLibrary(hModule);
+                    }
+                }
+                else
+                {
+                    printf("DLL %s does not export 'create_component'\n", entry.path().string().c_str());
+                    FreeLibrary(hModule);
+                }
+            }
+            else
+            {
+                printf("Failed to load DLL %s: %d\n", entry.path().string().c_str(), GetLastError());
+            }
+        }
+    }
+}
+
 void component_loader::register_component(std::unique_ptr<component_interface>&& component)
 {
 	get_components().push_back(std::move(component));
 }
 
-void component_loader::load_dll_components()
+/*void component_loader::load_dll_components()
 {
     std::filesystem::path plugins_path = "plugins";
     if (!std::filesystem::exists(plugins_path))
@@ -50,7 +103,7 @@ void component_loader::load_dll_components()
             }
         }
     }
-}
+}*/
 
 bool component_loader::post_start()
 {
@@ -92,6 +145,7 @@ bool component_loader::post_load()
 
 void component_loader::post_unpack()
 {
+	printNumComponents();
 	static auto handled = false;
 	if (handled) return;
 	handled = true;
@@ -102,11 +156,13 @@ void component_loader::post_unpack()
 
 void component_loader::post_cgame()
 {
+	printNumComponents();
 	for (const auto& component : get_components())
 		component->post_cgame();
 }
 void component_loader::post_ui_mp()
 {
+	printNumComponents();
 	for (const auto& component : get_components())
 		component->post_ui_mp();
 }
@@ -152,4 +208,9 @@ std::vector<std::unique_ptr<component_interface>>& component_loader::get_compone
 		});
 
 	return *components;
+}
+
+void component_loader::printNumComponents()
+{
+	printf("component_loader::post_unpack started, %zu components registered\n", get_components().size());
 }

@@ -275,14 +275,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In
     FARPROC entry_point;
     try
     {
+        component_loader::load_dll_components();
         if (!component_loader::post_start())
             return 1;
 
         entry_point = load_binary();
         if (!entry_point)
             throw std::runtime_error("Unable to load binary into memory");
-        
-        component_loader::load_dll_components();
         
         if (!component_loader::post_load())
             return 1;
