@@ -13,6 +13,7 @@ namespace fixes
     static __declspec(naked) void stub_Field_CharEvent_ignore_console_char()
     {
         printf("stub_Field_CharEvent_ignore_console_char\n");
+        OutputDebugStringA("stub_Field_CharEvent_ignore_console_char\n");
         __asm
         {
             cmp ebx, 20h;
@@ -31,7 +32,9 @@ namespace fixes
     
     static char* stub_CL_SetServerInfo_hostname_strncpy(char* dest, const char* src, int destsize)
 	{
-        printf("stub_CL_SetServerInfo_hostname_strncpy: %s\n", utils::string::clean(src, false).c_str());
+        //printf("stub_CL_SetServerInfo_hostname_strncpy: %s\n", utils::string::clean(src, false).c_str());
+        //OutputDebugStringA(utils::string::clean(src, false).c_str());
+        //OutputDebugStringA("stub_CL_SetServerInfo_hostname_strncpy: \n");
 #pragma warning(push)
 #pragma warning(disable: 4996)
 		strncpy(dest, utils::string::clean(src, false).c_str(), destsize); // destsize is already max-1 (=31), so not using _TRUNCATE, not to lose a char
@@ -52,7 +55,7 @@ namespace fixes
 
 extern "C" __declspec(dllexport) component_interface* create_component()
 {
-    printf("Creating fixes component\n");
+    OutputDebugStringA("Creating fixes component\n");
     return new fixes::component();
 }
 #endif

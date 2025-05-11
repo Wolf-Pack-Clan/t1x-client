@@ -198,6 +198,8 @@ namespace stock
 		float adsZoomOutFrac; // 0x027c <-|
 		char *adsOverlayShader; // 0x0280
 		char gap4[4]; // not sure if this is adsOverlayReticle
+		// talked to cohnred, it seems adsOverlayReticle is leftover from cod1
+		// uo uses adsOverlayShader instead
 		float adsOverlayWidth;
 		float adsOverlayHeight;
 		float adsBobFactor;

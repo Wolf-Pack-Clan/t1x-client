@@ -1,21 +1,12 @@
 # Client source files
 
-grab_cl_src = '''#!/bin/sh
-for i in *.cpp; do
-  echo $i
-done
-for i in loader/*.cpp; do
-  echo $i
-done
-for i in components/*.cpp; do
-  echo $i
-done
-for i in stock/*.cpp; do
-  echo $i
-done
-'''
-client_sources = files(run_command('sh', '-c', grab_cl_src, check : false).stdout().strip().split('\n'))
-message(run_command('sh', '-c', grab_cl_src, check : false).stdout().strip())
+#grab_stock_src = '''#!/bin/sh
+#for i in stock/*.cpp; do
+#  echo $i
+#done
+#'''
+#stock_sources = files(run_command('sh', '-c', grab_stock_src, check : false).stdout().strip().split('\n'))
+#message(run_command('sh', '-c', grab_stock_src, check : false).stdout().strip())
 ########### Include directories ###########
 
 msvc_dir = run_command('sh', '-c', 'echo $MSVC_DIR', check : false).stdout().strip()
@@ -27,6 +18,7 @@ client_includes = include_directories(
   '../utils',
   '../../submodules/GSL/include',
   '../../submodules/minhook/include',
+  'vendor/minhook/include',
   msvc_dir + '/VC/Tools/MSVC/14.43.34808/include'
 )
 
@@ -55,9 +47,12 @@ minhook_lib = static_library('minhook', minhook_sources,
 )
 
 minhook_dep = declare_dependency(
-  include_directories : include_directories('../../submodules/minhook/include'),
+  #include_directories : include_directories('../../submodules/minhook/include'),
+  include_directories : include_directories('vendor/minhook/include'),
   link_with : minhook_lib
 )
+
+#minhook_dep = meson.get_compiler('cpp').find_library('MinHook.x86', dirs: '/home/kazam/Documents/t1x-client/t1x-client/src/client/vendor/minhook/bin/', required: true)
 
 ### utils ###
 grab_utils_src = '''#!/bin/sh
@@ -101,20 +96,38 @@ endif
 
 ########### Executable ###########
 
-executable('t1x', client_sources + resource,# client_headers, # Apparently not needed
-  include_directories : client_includes,
-  dependencies : [utils_dep, minhook_dep, gsl_dep],
-  cpp_pch : './pch.h',
-  install_dir : coduo_dir,
-  install : true,
-  win_subsystem : 'windows',
-  link_args : ['/DYNAMICBASE:NO', '/LAST:._text'],
-  cpp_args : ['/D_MSVC_WINE']
+# Shared library: libt1x.dll
+
+dbghelp_dep = meson.get_compiler('cpp').find_library('DbgHelp', required : true)
+
+t1x_lib = shared_library('t1x',
+  sources: files('t1x_core.cpp', 'stock/functions.cpp', 'stock/variables.cpp', 'loader/component_loader.cpp'),
+  include_directories: client_includes,
+  #dependencies: [utils_dep],
+  #cpp_pch: './pch.h',
+  install: true,
+  install_dir: coduo_dir,
+  link_args: ['/DYNAMICBASE:NO'],
+  cpp_args: ['/DBUILDING_T1X_DLL'],
+  name_prefix: 'lib',
+  name_suffix: 'dll'
+)
+t1x_dep = declare_dependency(link_with: t1x_lib, include_directories: client_includes)
+
+executable('t1x', files(['main.cpp', 'pch.cpp', 'loader/loader.cpp']) + resource,
+  include_directories: client_includes,
+  dependencies: [t1x_dep, utils_dep, minhook_dep, gsl_dep, dbghelp_dep],
+  cpp_pch: './pch.h',
+  install_dir: coduo_dir,
+  install: true,
+  win_subsystem: 'windows',
+  link_args: ['/DYNAMICBASE:NO', '/LAST:._text'],
+  #cpp_args: []
 )
 
-shared_library('testplugin', files('./plugin/test.cpp') + client_sources,
+shared_library('testplugin', files('./plugin/test.cpp'),
   include_directories : client_includes,
-  dependencies : [utils_dep, minhook_dep, gsl_dep],
+  dependencies : [t1x_dep, minhook_dep],
   cpp_pch : './pch.h',
   install_dir : coduo_dir + '/plugins',
   install : true,
@@ -124,9 +137,33 @@ shared_library('testplugin', files('./plugin/test.cpp') + client_sources,
   name_suffix : 'dll'
 )
 
-shared_library('fixes', files('./plugin/fixes.cpp') + client_sources,
+shared_library('fixes', files('./plugin/fixes.cpp'),
   include_directories : client_includes,
-  dependencies : [utils_dep, minhook_dep, gsl_dep],
+  dependencies : [t1x_dep, utils_dep, minhook_dep],
+  cpp_pch : './pch.h',
+  install_dir : coduo_dir + '/plugins',
+  install : true,
+  link_args : ['/DYNAMICBASE:NO'],
+  cpp_args : ['/D_MSVC_WINE'],
+  name_prefix : '',
+  name_suffix : 'dll'
+)
+
+shared_library('view', files('./plugin/view.cpp'),
+  include_directories : client_includes,
+  dependencies : [t1x_dep, utils_dep, minhook_dep],
+  cpp_pch : './pch.h',
+  install_dir : coduo_dir + '/plugins',
+  install : true,
+  link_args : ['/DYNAMICBASE:NO'],
+  cpp_args : ['/D_MSVC_WINE'],
+  name_prefix : '',
+  name_suffix : 'dll'
+)
+
+shared_library('movement', files('./plugin/movement.cpp'),
+  include_directories : client_includes,
+  dependencies : [t1x_dep, utils_dep, minhook_dep],
   cpp_pch : './pch.h',
   install_dir : coduo_dir + '/plugins',
   install : true,

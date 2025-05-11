@@ -6,6 +6,7 @@
 
 #include "loader/component_loader.h"
 #include "test.h"
+#include "t1x_core.h"
 
 namespace test
 {

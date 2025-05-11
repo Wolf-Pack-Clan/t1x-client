@@ -4,6 +4,8 @@
 
 void component_loader::load_dll_components()
 {
+    printf("Loading components from plugins directory...\n");
+    OutputDebugStringA("Loading components from plugins directory...\n");
     std::filesystem::path plugins_path = "plugins";
     if (!std::filesystem::exists(plugins_path))
     {

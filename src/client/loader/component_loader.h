@@ -1,7 +1,17 @@
 #pragma once
 #include "component_interface.h"
 
-class component_loader final
+#ifndef COMPONENT_API
+
+#ifdef BUILDING_T1X_DLL
+#define COMPONENT_API __declspec(dllexport)
+#else
+#define COMPONENT_API __declspec(dllimport)
+#endif
+
+#endif
+
+class COMPONENT_API component_loader final
 {
 public:
 	class premature_shutdown_trigger final : public std::exception

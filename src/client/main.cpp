@@ -7,11 +7,13 @@
 #include "loader/loader.h"
 #include "loader/component_loader.h"
 
+#include "t1x_core.h"
+
 //#include "components/window.h"
 
 bool clientNamedMohaa = false;
-DWORD address_cgame_mp;
-DWORD address_ui_mp;
+//DWORD address_cgame_mp;
+//DWORD address_ui_mp;
 utils::hook::detour hook_GetModuleFileNameW;
 utils::hook::detour hook_GetModuleFileNameA;
 
@@ -86,7 +88,7 @@ static HMODULE WINAPI stub_LoadLibraryA(LPCSTR lpLibFileName)
         }
     }
     return ret;
-}
+}//*/
 
 /*
 Return original client filename, so GPU driver knows what game it is,
@@ -249,6 +251,12 @@ static FARPROC load_binary()
 
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In_ int)
 {
+    wchar_t exePath[MAX_PATH];
+    GetModuleFileNameW(NULL, exePath, MAX_PATH);
+    OutputDebugStringW(exePath);
+    std::filesystem::path exeDir = std::filesystem::path(exePath).parent_path();
+    SetDllDirectoryW(exeDir.c_str());
+
 #if 0
     MessageBox(NULL, lpCmdLine, "", NULL);
 #endif
@@ -276,6 +284,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In
     try
     {
         component_loader::load_dll_components();
+        component_loader::printNumComponents();
+        printf("hello from t1x\n");
+        OutputDebugStringA("hello from t1x\n");
         if (!component_loader::post_start())
             return 1;
 

@@ -26,6 +26,8 @@ namespace stock
 		}
 	}
 
+	WEAK adjuster<void(const char* cmd_name, xcommand_t function)> Cmd_AddCommand{ 0x0042c3b0 };
+
 	int32_t BG_GetNumWeapons()
 	{
 		return bg_iNumWeapons != nullptr ? *bg_iNumWeapons : 0;

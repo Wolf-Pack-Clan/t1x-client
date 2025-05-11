@@ -2,13 +2,18 @@
 #include <wtypesbase.h>
 #endif
 
+#ifdef BUILDING_T1X_DLL
 #define WEAK __declspec(selectany)
+#else
+#define WEAK
+#endif
 
 constexpr auto BASE_CGAME_MP = 0x30000000;
 constexpr auto BASE_UI_MP = 0x40000000;
 
-extern DWORD address_cgame_mp;
-extern DWORD address_ui_mp;
+//extern DWORD address_cgame_mp;
+//extern DWORD address_ui_mp;
+#include "t1x_core.h"
 
 #define ABSOLUTE_CGAME_MP(relative) (address_cgame_mp + (relative - BASE_CGAME_MP))
 #define ABSOLUTE_UI_MP(relative) (address_ui_mp + (relative - BASE_UI_MP))
