@@ -12,8 +12,8 @@ namespace fixes
     uintptr_t pfield_charevent_continue = 0x40dcf3; // 0040dcf3 for uo
     static __declspec(naked) void stub_Field_CharEvent_ignore_console_char()
     {
-        printf("stub_Field_CharEvent_ignore_console_char\n");
-        OutputDebugStringA("stub_Field_CharEvent_ignore_console_char\n");
+        //printf("stub_Field_CharEvent_ignore_console_char\n");
+        //OutputDebugStringA("stub_Field_CharEvent_ignore_console_char\n");
         __asm
         {
             cmp ebx, 20h;

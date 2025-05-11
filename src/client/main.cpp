@@ -253,9 +253,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR lpCmdLine, _In
 {
     wchar_t exePath[MAX_PATH];
     GetModuleFileNameW(NULL, exePath, MAX_PATH);
-    OutputDebugStringW(exePath);
     std::filesystem::path exeDir = std::filesystem::path(exePath).parent_path();
     SetDllDirectoryW(exeDir.c_str());
+    printf("exeDir: %ls\n", exeDir.c_str());
 
 #if 0
     MessageBox(NULL, lpCmdLine, "", NULL);
