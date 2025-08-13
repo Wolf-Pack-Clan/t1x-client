@@ -1,3 +1,9 @@
+# INFO
+Migrated to GitLab:
+https://gitlab.com/kazam0180/t1x-client
+
+
+
 ###### top-link
 # Improvements for [CoDUO](https://en.wikipedia.org/wiki/Call_of_Duty:_United_Offensive) Multiplayer client
 ### Adding security, fixes, and features
